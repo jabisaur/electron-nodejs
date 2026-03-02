@@ -48,7 +48,7 @@ async function carregarGravadoras() {
         console.log('Erro ao carregar gravadoras:', erro)
         selectGravadora.innerHTML = '<option value="">Erro ao carregar gravadoras</option>'
     }
-}
+};
 
 async function carregarMusicasParaSelect() {
     try {
@@ -714,7 +714,7 @@ async function removerMusicaDoDisco(discoId, musicaId) {
             mensagem: 'Erro ao remover música: ' + erro.message
         })   
     }
-}
+};
 
 // tornar funções globais para os botões HTML
 window.editarDisco = editarDisco;

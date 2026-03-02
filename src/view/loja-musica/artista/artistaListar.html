@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artistas | Empire Records</title>
+    <link rel="stylesheet" href="../css/estilo.css">
+    <link rel="stylesheet" href="../../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <ul class="nav-links navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../cadastro/cadastro.html">Cadastro</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="../buscar/buscar.html">Busca</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>🎭 Lista de Artistas</h1>
+                <div>
+                    <a href="../artista/artista.html" class="btn btn-primary">
+                        ➕ Novo Artista
+                    </a>
+                    <a href="../associar-papeis/associar-papeis.html" class="btn btn-info">
+                        🎤 Gerenciar Papéis
+                    </a>
+                </div>
+            </div>
+
+            <!-- Cards de estatísticas resumidas -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <h5 class="card-title">Total de Artistas</h5>
+                            <p class="card-text display-6" id="totalArtistas">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">São Intérpretes</h5>
+                            <p class="card-text display-6" id="totalInterpretes">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <h5 class="card-title">São Compositores</h5>
+                            <p class="card-text display-6" id="totalCompositores">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <h5 class="card-title">São Ambos</h5>
+                            <p class="card-text display-6" id="totalAmbos">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <input type="text" class="form-control" id="filtroNome" 
+                                   placeholder="🔍 Filtrar por nome do artista..." 
+                                   onkeyup="filtrarTabela()">
+                        </div>
+                        <div class="col-md-5">
+                            <select class="form-control" id="filtroPapel" onchange="filtrarTabela()">
+                                <option value="todos">🎭 Todos os papéis</option>
+                                <option value="interprete">🎤 Apenas intérpretes</option>
+                                <option value="compositor">✍️ Apenas compositores</option>
+                                <option value="ambos">⭐ Intérpretes e compositores</option>
+                                <option value="nenhum">❌ Sem papéis definidos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-secondary w-100" onclick="limparFiltros()">
+                                Limpar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de artistas -->
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Artista</th>
+                            <th>Papéis</th>
+                            <th>Músicas como Intérprete</th>
+                            <th>Músicas como Compositor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-artistas">
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Carregando...</span>
+                                </div>
+                                <br>Carregando artistas...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Rodapé com contador -->
+            <div class="text-muted text-end mt-2">
+                Mostrando <span id="mostrandoCount">0</span> de <span id="totalCount">0</span> artistas
+            </div>
+        </div>
+    </main>
+
+    <script src="rendererArtistasListar.js"></script>
+</body>
+</html>

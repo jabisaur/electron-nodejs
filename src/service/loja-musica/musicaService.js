@@ -208,11 +208,36 @@ const buscarInterpretes = (musicaId) => {
     })
 }
 
+const buscarCompositores = (musicaId) => {
+    console.log('>>> lojaMusica:musica:buscarCompositores > ID:', musicaId)
+
+    return new Promise((resolve, reject) => {
+        db.all(
+            `SELECT a.* 
+             FROM artista a
+             INNER JOIN compositor c ON a.artista_id = c.artista_id
+             WHERE c.musica_id = ?
+             ORDER BY a.nome`,
+            [musicaId],
+            (erro, compositores) => {
+                if (erro) {
+                    console.error('Erro ao buscar compositores da música:', erro)
+                    reject(erro)
+                    return
+                }
+                console.log(`${compositores.length} compositores encontrados para a música ${musicaId}`)
+                resolve(compositores)
+            }
+        )
+    })
+}
+
 module.exports = {
     criar,
     listar,
     editar,
     deletar,
     buscar,
-    buscarInterpretes
+    buscarInterpretes,
+    buscarCompositores
 }

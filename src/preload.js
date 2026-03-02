@@ -78,6 +78,7 @@ contextBridge.exposeInMainWorld("lojaMusica", {
         editar: (id, dados) => ipcRenderer.invoke("lojaMusica:musica:editar", id, dados),
         buscar: (id) => ipcRenderer.invoke("lojaMusica:musica:buscar", id),
         buscarInterpretes: (musicaId) => ipcRenderer.invoke("lojaMusica:musica:buscarInterpretes", musicaId),
+        buscarCompositores: (musicaId) => ipcRenderer.invoke("lojaMusica:musica:buscarCompositores", musicaId)
         
     },
     disco: {

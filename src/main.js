@@ -270,7 +270,14 @@ const createIpcMain = () => {
     } catch (erro) {
         return { erro: erro.message }      
     }   
-});
+  });
+  ipcMain.handle("lojaMusica:musica:buscarCompositores", async (event, musicaId) => {
+    try {
+        return await musicaService.buscarCompositores(musicaId)
+    } catch (erro) {
+        return { erro: erro.message }      
+    }   
+  });
 
   // Disco
   ipcMain.handle("lojaMusica:disco:criar", async (event, dados) =>{
