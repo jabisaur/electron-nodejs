@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar | Empire Records</title>
+    <link rel="stylesheet" href="../css/estilo.css">
+    <link rel="stylesheet" href="../../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <ul class="nav-links navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../cadastro/cadastro.html">Cadastro</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>🔍 Buscar no Empire Records</h1>
+
+            <!-- Formulário de busca -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="form-busca">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="termoBusca">Digite o termo de busca:</label>
+                                    <input type="text" class="form-control" id="termoBusca" 
+                                           placeholder="Ex: Rock, Beatles, Sony..." autofocus>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="tipoBusca">Buscar em:</label>
+                                    <select class="form-control" id="tipoBusca">
+                                        <option value="todos">Todos os tipos</option>
+                                        <option value="artistas">Artistas</option>
+                                        <option value="discos">Discos</option>
+                                        <option value="estilos">Estilos</option>
+                                        <option value="gravadoras">Gravadoras</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Buscar</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Resultados da busca -->
+            <div id="resultadosBusca">
+                <h2>Resultados</h2>
+                
+                <!-- Artistas -->
+                <div id="resultadosArtistas" style="display: none;">
+                    <h3>🎤 Artistas</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyArtistas">
+                            <tr>
+                                <td colspan="3" class="text-center">Nenhum artista encontrado</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Discos -->
+                <div id="resultadosDiscos" style="display: none;">
+                    <h3>💿 Discos</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Capa</th>
+                                <th>Nome</th>
+                                <th>Lançamento</th>
+                                <th>Gravadora</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyDiscos">
+                            <tr>
+                                <td colspan="6" class="text-center">Nenhum disco encontrado</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="resultadosMusicas" style="display: none;">
+                    <h3>🎵 Músicas</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Duração</th>
+                                <th>Lançamento</th>
+                                <th>Estilo</th>
+                                <th>Intérpretes</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyMusicas">
+                            <tr>
+                                <td colspan="7" class="text-center">Nenhuma música encontrada</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Estilos -->
+                <div id="resultadosEstilos" style="display: none;">
+                    <h3>🎵 Estilos</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Descrição</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyEstilos">
+                            <tr>
+                                <td colspan="3" class="text-center">Nenhum estilo encontrado</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Gravadoras -->
+                <div id="resultadosGravadoras" style="display: none;">
+                    <h3>🏢 Gravadoras</h3>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyGravadoras">
+                            <tr>
+                                <td colspan="3" class="text-center">Nenhuma gravadora encontrada</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="semResultados" style="display: none;" class="alert alert-info">
+                    Nenhum resultado encontrado para o termo pesquisado.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="rendererBusca.js"></script>
+</body>
+</html>

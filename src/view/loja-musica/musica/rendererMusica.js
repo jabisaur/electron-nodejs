@@ -82,11 +82,23 @@ async function carregarMusicas() {
         let html = ''
         
         musicas.forEach(musica => {
-            //formatar data
-            const data = new Date(musica.data_lancamento)
-            const dataFormatada = data.toLocaleDateString('pt-BR')
+            let dataFormatada = 'Data inválida'
+            if (musica.data_lancamento) {
+                const partes = musica.data_lancamento.split('T')[0].split('-')
+                if (partes.length === 3) {
+                    dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`
+                } else {
+                    // fallback para o formato padrão
+                    try {
+                        const data = new Date(musica.data_lancamento + 'T12:00:00')
+                        dataFormatada = data.toLocaleDateString('pt-BR')
+                    } catch (e) {
+                        console.error('Erro ao formatar data:', e)
+                    }
+                }
+            }
 
-            //escapar aspas pra não quebrar html
+            // escapar aspas pra não quebrar html
             const nomeEscapado = musica.nome.replace(/'/g, "\\'").replace(/"/g, '&quot;')
             const duracaoEscapada = musica.duracao.replace(/'/g, "\\'").replace(/"/g, '&quot;')
 
