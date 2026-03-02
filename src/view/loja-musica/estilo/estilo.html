@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estilo | Empire Records</title>
+    <link rel="stylesheet" href="../css/estilo.css">
+    <link rel="stylesheet" href="../css/modal.css">
+    <link rel="stylesheet" href="../../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <ul class="nav-links navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../cadastro/cadastro.html">Cadastro</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+        <h1>🎵 Gerenciar Estilos Musicais</h1>
+        
+        <!-- Formulário de cadastro -->
+        <div class="form-group">
+            <h2>Cadastrar Novo Estilo</h2>
+            <form id="form-estilo">
+                <input type="text" name="descricao" placeholder="Digite o nome do estilo" autofocus>
+                <button type="submit" >Salvar</button>
+            </form>
+        </div>
+        
+        <!-- Lista de estilos -->
+        <h2>Estilos Cadastrados</h2>
+        
+        <table id="lista-estilos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-estilos">
+                <tr>
+                    <td colspan="3" style="text-align: center; padding: 20px;">
+                        Nenhum estilo cadastrado ainda
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Modal de Edição de Estilo -->
+    <div id="edicaoEstiloModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="edicaoTitulo">Editar Estilo</h3>
+                <button class="close-btn" onclick="fecharModalEdicao()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="edicaoMensagem"></p>
+            
+                <div class="valor-atual-info">
+                    <strong>Nome atual:</strong>
+                    <span id="valorAtualTexto"></span>
+                </div>
+            
+                <div class="form-group">
+                    <label for="edicaoInput">Novo nome:</label>
+                    <input 
+                        type="text" 
+                        id="edicaoInput" 
+                        class="edicao-input"
+                        placeholder="Digite o novo nome do estilo..."
+                    />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="edicaoBtnCancelar" class="btn-cancelar">Cancelar</button>
+                <button id="edicaoBtnConfirmar" class="btn-confirmar">Salvar</button>
+            </div>
+        </div>
+    </div>
+    </main>
+
+    <script src="rendererEstilo.js"></script>
+</body>
+</html>

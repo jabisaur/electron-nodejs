@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Músicas | Empire Records</title>
+    <link rel="stylesheet" href="../css/estilo.css">
+    <link rel="stylesheet" href="../../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <ul class="nav-links navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../cadastro/cadastro.html">Cadastro</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>🎵 Gerenciar Músicas</h1>
+
+            <!-- Formulário de cadastro -->
+            <div class="form-group">
+                <h2>Cadastrar Nova Música</h2>
+                <form id="form-musica">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome da Música</label>
+                        <input type="text" class="form-control" id="nome" name="nome"
+                            placeholder="Digite o nome da música" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="duracao" class="form-label">Duração</label>
+                        <input type="text" class="form-control" id="duracao" name="duracao" placeholder="Ex: 3:45"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="data_lancamento" class="form-label">Data de Lançamento</label>
+                        <input type="date" class="form-control" id="data_lancamento" name="data_lancamento" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="estilo_id" class="form-label">Estilo Musical</label>
+                        <select class="form-control" id="estilo_id" name="estilo_id" required>
+                            <option value="">Selecione um estilo...</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Intérpretes (obrigatório)</label>
+                        <select class="form-control" id="interpretes" name="interpretes" multiple required>
+                            <option value="">Selecione os intérpretes...</option>
+                        </select>
+                        <small class="text-muted">Segure Ctrl para selecionar múltiplos intérpretes</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Compositores (opcional)</label>
+                        <select class="form-control" id="compositores" name="compositores" multiple>
+                            <option value="">Selecione os compositores...</option>
+                        </select>
+                        <small class="text-muted">Segure Ctrl para selecionar múltiplos compositores</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Salvar Música</button>
+                </form>
+            </div>
+
+            <!-- Lista de músicas -->
+            <h2 class="mt-5">Músicas Cadastradas</h2>
+
+            <table class="table table-striped" id="lista-musicas">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Duração</th>
+                        <th>Lançamento</th>
+                        <th>Estilo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-musicas">
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px;">
+                            Nenhuma música cadastrada ainda.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Modal de Edição de Musica -->
+        <div id="edicaoMusicaModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="edicaoTitulo">Editar Musica</h3>
+                </div>
+                <div class="modal-body">
+                    <p id="edicaoMensagem"></p>
+
+                    <div class="valor-atual-info">
+                        <strong>Nome atual:</strong>
+                        <span id="valorAtualTexto"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edicaoInput">Novo nome:</label>
+                        <input type="text" id="edicaoInput" class="edicao-input"
+                            placeholder="Digite o novo nome do artista..." />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="edicaoBtnCancelar" class="btn-cancelar">Cancelar</button>
+                    <button id="edicaoBtnConfirmar" class="btn-confirmar">Salvar</button>
+                </div>
+            </div>
+    </main>
+
+    <script src="rendererMusica.js"></script>
+</body>
+
+</html>

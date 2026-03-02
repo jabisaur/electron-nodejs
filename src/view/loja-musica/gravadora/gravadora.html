@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravadora | Empire Records</title>
+    <link rel="stylesheet" href="../css/estilo.css">
+    <link rel="stylesheet" href="../css/modal.css">
+    <link rel="stylesheet" href="../../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <ul class="nav-links navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../cadastro/cadastro.html">Cadastro</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+        <h1>🎵 Gerenciar Gravadoras</h1>
+        
+        <!-- Formulário de cadastro -->
+        <div class="form-group">
+            <h2>Cadastrar Nova Gravadora</h2>
+            <form id="form-gravadora">
+                <input type="text" name="nome" placeholder="Digite o nome da gravadora" autofocus>
+                <button type="submit">Salvar</button>
+            </form>
+        </div>
+        
+        <!-- Lista de gravadoras -->
+        <h2>Gravadoras Cadastradas</h2>
+        
+        <table id="lista-gravadora">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-gravadora">
+                <tr>
+                    <td colspan="3" style="text-align: center; padding: 20px;">
+                        Nenhuma gravadora cadastrada ainda.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Modal de Edição de Gravadora -->
+    <div id="edicaoGravadoraModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="edicaoTitulo">Editar Gravadora</h3>
+            </div>
+            <div class="modal-body">
+                <p id="edicaoMensagem"></p>
+            
+                <div class="valor-atual-info">
+                    <strong>Nome atual:</strong>
+                    <span id="valorAtualTexto"></span>
+                </div>
+            
+                <div class="form-group">
+                    <label for="edicaoInput">Novo nome:</label>
+                    <input 
+                        type="text" 
+                        id="edicaoInput" 
+                        class="edicao-input"
+                        placeholder="Digite o novo nome da gravadora..."
+                    />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="edicaoBtnCancelar" class="btn-cancelar">Cancelar</button>
+                <button id="edicaoBtnConfirmar" class="btn-confirmar">Salvar</button>
+            </div>
+        </div>
+    </div>
+    </main>
+
+    <script src="rendererGravadora.js"></script>
+</body>
+</html>

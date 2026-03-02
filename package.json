@@ -1,0 +1,21 @@
+{
+  "name": "hello-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "db:create": "node database/db.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^40.0.0"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "sqlite3": "^5.1.7"
+  }
+}

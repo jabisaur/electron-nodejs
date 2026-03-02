@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <ul class="nav-links navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../versao/versoes.html">Versões</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../contador/contador.html">Contador</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="../calculadora/calculadora.html">Calculadora</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="../loja-musica/index.html">Loja de Discos</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    
+    <main class="container">
+        <h1 class="mb-4">Calculadora</h1>
+
+        <div id="calculadora">
+            <div id="display" class="mb-3">0</div>
+            <div id="botoes">
+                <!-- Linha 1 -->
+                <button class="btn btn-danger" onclick="limparDisplay()">C</button>
+                <button class="btn btn-dark btn-operacao" onclick="definirOperador('/')">÷</button>
+                <button class="btn btn-dark btn-operacao" onclick="definirOperador('*')">×</button>
+                <button class="btn btn-dark btn-operacao" onclick="definirOperador('-')">-</button>
+                
+                <!-- Linha 2 -->
+                <button class="btn btn-dark" onclick="adicionarNumero('7')">7</button>
+                <button class="btn btn-dark" onclick="adicionarNumero('8')">8</button>
+                <button class="btn btn-dark" onclick="adicionarNumero('9')">9</button>
+                <button class="btn btn-dark btn-operacao" onclick="definirOperador('+')">+</button>
+                
+                <!-- Linha 3 -->
+                <button class="btn btn-dark" onclick="adicionarNumero('4')">4</button>
+                <button class="btn btn-dark" onclick="adicionarNumero('5')">5</button>
+                <button class="btn btn-dark" onclick="adicionarNumero('6')">6</button>
+                <button class="btn btn-dark btn-operacao" onclick="definirOperador('%')">mod</button>
+                
+                <!-- Linha 4 -->
+                <button class="btn btn-dark" onclick="adicionarNumero('1')">1</button>
+                <button class="btn btn-dark" onclick="adicionarNumero('2')">2</button>
+                <button class="btn btn-dark" onclick="adicionarNumero('3')">3</button>
+                <button class="btn btn-dark btn-igual" onclick="calcular()">=</button>
+                
+                <!-- Linha 5 -->
+                <button class="btn btn-dark btn-zero" onclick="adicionarNumero('0')">0</button>
+                <button class="btn btn-dark" onclick="adicionarDecimal()">.</button>
+            </div>
+        </div>
+    </main>
+    
+    <script src="rendererCalculadora.js"></script>
+</body>
+</html>
