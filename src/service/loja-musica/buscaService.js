@@ -122,3 +122,5 @@ const buscaService = {
 
 
 }
+
+module.exports = buscaService

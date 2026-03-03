@@ -96,5 +96,13 @@ contextBridge.exposeInMainWorld("lojaMusica", {
             remover: (disco_id, musica_id) => ipcRenderer.invoke("lojaMusica:disco:musicas:remover", disco_id, musica_id),
             verificar: (disco_id, musica_id) => ipcRenderer.invoke("lojaMusica:disco:musicas:verificar", disco_id, musica_id)
         }
+    },
+
+    busca: {
+        global: (termo) => ipcRenderer.invoke('lojaMusica:busca:global', termo),
+        artistasComPapeis: () => ipcRenderer.invoke('lojaMusica:busca:artistasComPapeis'),
+        artistasFiltrados: (filtros) => ipcRenderer.invoke('lojaMusica:busca:artistasFiltrados', filtros),
+        discosCompletos: (filtros) => ipcRenderer.invoke('lojaMusica:busca:discosCompletos', filtros),
+        musicasComDetalhes: (filtros) => ipcRenderer.invoke('lojaMusica:busca:musicasComDetalhes', filtros),
     }
 });

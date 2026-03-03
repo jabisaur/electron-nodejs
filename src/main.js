@@ -7,6 +7,7 @@ const gravadoraService = require('./service/loja-musica/gravadoraService')
 const artistaService = require('./service/loja-musica/artistaService')
 const musicaService = require('./service/loja-musica/musicaService')
 const discoService = require('./service/loja-musica/discoService')
+const buscaService = require('./service/loja-musica/buscaService')
 
 console.log('Estou executando no node!');
 
@@ -365,8 +366,44 @@ ipcMain.handle("lojaMusica:disco:getInterpretes", async (event, discoId) => {
     } catch (erro) {
         return { erro: erro.message }
     }
-});
+  });
 
+  // Busca
+  ipcMain.handle('lojaMusica:busca:global', async (event, termo) => {
+    try {
+        return await buscaService.buscaGlobal(termo)
+    } catch (erro) {
+        return { erro: erro.message }
+    }
+  });
+  ipcMain.handle('lojaMusica:busca:artistasComPapeis', async () => {
+    try {
+        return await buscaService.artistasComPapeis()
+    } catch (erro) {
+        return { erro: erro.message }
+    }
+  });
+  ipcMain.handle('lojaMusica:busca:artistasFiltrados', async (event, filtros) => {
+    try {
+        return await buscaService.artistasFiltrados(filtros)
+    } catch (erro) {
+        return { erro: erro.message }
+    }
+  });
+  ipcMain.handle('lojaMusica:busca:discosCompletos', async (event, filtros) => {
+    try {
+        return await buscaService.discosCompletos(filtros)
+    } catch (erro) {
+        return { erro: erro.message }
+    }
+  });
+  ipcMain.handle('lojaMusica:busca:musicasComDetalhes', async (event, filtros) => {
+    try {
+        return await buscaService.musicasComDetalhes(filtros)
+    } catch (erro) {
+        return { erro: erro.message }
+    }
+  });
 }
 
 app.whenReady().then( () => {
