@@ -333,18 +333,67 @@ const musicas = {
         })
     },
 
+    // discoService.js - método adicionar (CORRIGIDO)
     adicionar: (discoId, musicaId, ordem) => {
+        console.log('>>> adicionar música ao disco:', { discoId, musicaId, ordem })
+    
         return new Promise((resolve, reject) => {
-            db.run(
-                'INSERT INTO musica_disco (disco_id, musica_id, ordem) VALUES (?, ?, ?)',
-                [discoId, musicaId, ordem],
-                function (erro) {
+            if (!discoId || !musicaId || ordem === undefined || ordem === null) {
+                console.error('Parâmetros inválidos:', { discoId, musicaId, ordem })
+                reject(new Error('Parâmetros inválidos para adicionar música'))
+                return
+            }
+
+            const ordemInt = parseInt(ordem)
+            if (isNaN(ordemInt)) {
+                reject(new Error('Ordem deve ser um número válido'))
+                return
+            }
+
+            db.get(
+                'SELECT * FROM musica_disco WHERE disco_id = ? AND ordem = ?',
+                [discoId, ordemInt],
+                (erro, resultado) => {
                     if (erro) {
-                        console.error('Erro ao adicionar música ao disco:', erro)
+                        console.error('Erro ao verificar ordem:', erro)
                         reject(erro)
                         return
                     }
-                    resolve({ mensagem: 'Música adicionada ao disco com sucesso!' })
+
+                    if (resultado) {
+                        reject(new Error(`Já existe uma música na ordem ${ordemInt}`))
+                        return
+                    }
+
+                    db.run(
+                        'INSERT INTO musica_disco (disco_id, musica_id, ordem) VALUES (?, ?, ?)',
+                        [discoId, musicaId, ordemInt],  // <- AGORA PASSA OS 3!
+                        function (erro) {
+                            if (erro) {
+                                console.error('Erro ao adicionar música:', erro)
+                                reject(erro)
+                                return
+                            }
+
+                            console.log('Música adicionada com sucesso! ID da inserção:', this.lastID)
+                        
+                            db.get(
+                                'SELECT * FROM musica_disco WHERE disco_id = ? AND musica_id = ?',
+                                [discoId, musicaId],
+                                (erro, resultado) => {
+                                    if (erro) {
+                                        console.error('Erro ao buscar registro inserido:', erro)
+                                    } else {
+                                        console.log('Registro inserido:', resultado)
+                                    }
+                                    resolve({ 
+                                        mensagem: 'Música adicionada ao disco com sucesso!',
+                                        dados: resultado 
+                                    })
+                                }
+                            )
+                        }
+                    )
                 }
             )
         })
@@ -396,5 +445,3 @@ module.exports = {
     getInterpretesDoDisco,
     musicas
 }
-
-
