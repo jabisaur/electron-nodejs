@@ -285,7 +285,7 @@ const buscaService = {
 
             db.all(query, params, (erro, musicas) => {
                 if (erro) {
-                    console.error('Erro ao buscar músicas com detalhes:', erro)
+                    console.error('Erro ao buscar musicas com detalhes:', erro)
                     reject(erro)
                     return
                 }
