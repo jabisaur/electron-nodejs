@@ -337,6 +337,13 @@ const createIpcMain = () => {
       return { erro: erro.message }
     }
   });
+  ipcMain.handle("lojaMusica:disco:getInterpretePrincipal", async (event, discoId) => {
+    try {
+      return await discoService.getInterpretePrincipal(discoId)
+    } catch (erro) {
+      return { erro: erro.message }
+    }
+  });
 
   // Disco-Musicas
   ipcMain.handle('lojaMusica:disco:musicas:listar', async (event, disco_id) => {

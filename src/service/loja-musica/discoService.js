@@ -305,10 +305,12 @@ const buscarPorNomeEInterpretes = (nome, interpreteIds) => {
 const getInterpretesDoDisco = (discoId) => {
     return new Promise((resolve, reject) => {
         db.all(
-            `SELECT a.* 
+            `SELECT DISTINCT a.* 
              FROM artista a
-             INNER JOIN interprete_disco id ON a.artista_id = id.artista_id
-             WHERE id.disco_id = ?
+             INNER JOIN interprete i ON a.artista_id = i.artista_id
+             INNER JOIN musica m ON i.musica_id = m.musica_id
+             INNER JOIN musica_disco md ON m.musica_id = md.musica_id
+             WHERE md.disco_id = ?
              ORDER BY a.nome`,
             [discoId],
             (erro, interpretes) => {
@@ -317,7 +319,28 @@ const getInterpretesDoDisco = (discoId) => {
                     reject(erro)
                     return
                 }
+                console.log(`Intérpretes encontrados no disco ${discoId}:`, interpretes.length)
                 resolve(interpretes)
+            }
+        )
+    })
+};
+
+const getInterpretePrincipal = (discoId) => {
+    return new Promise((resolve, reject) => {
+        db.get(
+            `SELECT a.* 
+             FROM artista a
+             INNER JOIN disco d ON a.artista_id = d.interprete_principal_id
+             WHERE d.disco_id = ?`,
+            [discoId],
+            (erro, interprete) => {
+                if (erro) {
+                    console.error('Erro ao buscar intérprete principal:', erro)
+                    reject(erro)
+                    return
+                }
+                resolve(interprete)
             }
         )
     })
@@ -498,5 +521,6 @@ module.exports = {
     buscarPorNome,
     buscarPorNomeEInterpretes,
     getInterpretesDoDisco,
+    getInterpretePrincipal,
     musicas
 }

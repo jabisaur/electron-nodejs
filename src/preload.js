@@ -90,6 +90,7 @@ contextBridge.exposeInMainWorld("lojaMusica", {
         buscarPorNome: (nome) => ipcRenderer.invoke("lojaMusica:disco:buscarPorNome", nome),
         buscarPorNomeEInterpretes: (nome, interpreteIds) => ipcRenderer.invoke("lojaMusica:disco:buscarPorNomeEInterpretes", nome, interpreteIds),
         getInterpretes: (discoId) => ipcRenderer.invoke("lojaMusica:disco:getInterpretes", discoId),
+         getInterpretePrincipal: (discoId) => ipcRenderer.invoke("lojaMusica:disco:getInterpretePrincipal", discoId),
         musicas: {
             listar: (disco_id) => ipcRenderer.invoke("lojaMusica:disco:musicas:listar", disco_id),
             adicionar: (disco_id, musica_id, ordem) => ipcRenderer.invoke("lojaMusica:disco:musicas:adicionar", disco_id, musica_id, ordem),

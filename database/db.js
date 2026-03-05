@@ -47,7 +47,7 @@ db.run(`
     data_lancamento DATE NOT NULL,
     imagem TEXT,
     gravadora_id INT,
-    interprete_principal_id INT
+    interprete_principal_id INT,
 
     -- regra de chave estrangeira
     FOREIGN KEY (gravadora_id) REFERENCES gravadora (gravadora_id),
@@ -104,20 +104,4 @@ db.run(`
 
 );
     
-`)
-
-db.run(`
-    CREATE TABLE IF NOT EXISTS interprete_disco(
-    disco_id INTEGER NOT NULL,
-    artista_id INTEGER NOT NULL,
-    
-    -- regra de chave estrangeira
-    FOREIGN KEY (disco_id) REFERENCES disco (disco_id) ON DELETE CASCADE,
-    FOREIGN KEY (artista_id) REFERENCES artista (artista_id) ON DELETE CASCADE,
-    
-    -- regra de chave primaria composta
-    PRIMARY KEY (disco_id, artista_id)
-
-);
-
 `)

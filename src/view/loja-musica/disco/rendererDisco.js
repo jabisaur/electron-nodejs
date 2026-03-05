@@ -124,14 +124,41 @@ async function carregarDiscos() {
         let html = ''
 
         for (const disco of discos) {
-            let interpretesTexto = 'Carregando...'
+            // Formatar data
+            let dataFormatada = 'Data inválida'
+            if (disco.data_lancamento) {
+                try {
+                    const data = new Date(disco.data_lancamento + 'T12:00:00')
+                    dataFormatada = data.toLocaleDateString('pt-BR')
+                } catch (e) {
+                    console.error('Erro ao formatar data:', e)
+                }
+            }
+
+            // Buscar intérpretes do disco (participações)
+            let interpretesTexto = 'Nenhuma música com intérprete'
+            let interpretePrincipalTexto = ''
+
             try {
+                // Intérprete principal (vem do JOIN no SELECT)
+                if (disco.interprete_principal_nome) {
+                    interpretePrincipalTexto = `<strong class="text-primary">${disco.interprete_principal_nome}</strong>`
+                }
+                
+                // Buscar todos os intérpretes das músicas do disco
                 const interpretes = await window.lojaMusica.disco.getInterpretes(disco.disco_id)
                 
                 if (interpretes && interpretes.length > 0) {
-                    interpretesTexto = interpretes.map(i => i.nome).join(', ')
-                } else {
-                    interpretesTexto = 'Sem intérprete definido'
+                    // Filtrar para não mostrar o principal duas vezes
+                    const outrosInterpretes = disco.interprete_principal_id 
+                        ? interpretes.filter(i => i.artista_id !== disco.interprete_principal_id)
+                        : interpretes
+                    
+                    if (outrosInterpretes.length > 0) {
+                        interpretesTexto = outrosInterpretes.map(i => i.nome).join(', ')
+                    } else {
+                        interpretesTexto = 'Apenas o artista principal'
+                    }
                 }
 
             } catch (erro) {
@@ -139,35 +166,35 @@ async function carregarDiscos() {
                 interpretesTexto = 'Erro ao carregar'
             }
 
-            let dataFormatada = 'Data inválida'
-            if (disco.data_lancamento) {
-                const partes = disco.data_lancamento.split('T')[0].split('-')
-                if (partes.length === 3) {
-                    dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`
-                } else {
-                    try {
-                        const data = new Date(disco.data_lancamento + 'T12:00:00')
-                        dataFormatada = data.toLocaleDateString('pt-BR')
-                    } catch (e) {
-                        console.error('Erro ao formatar data:', e)
-                    }
-                }
-            }
-
-            // escapa aspas para nao quebrar HTML
+            // Escapar aspas para não quebrar HTML
             const dadosJSON = JSON.stringify(disco).replace(/'/g, "\\'").replace(/"/g, '&quot;')
 
+            // Montar HTML da linha
             html += `
                 <tr>
                     <td>${disco.disco_id}</td>
                     <td>
-                        ${disco.imagem ? `<img src="${disco.imagem}" alt="Capa" style="width: 50px; height: 50px; object-fit: cover;">` : '📀'}
+                        ${disco.imagem 
+                            ? `<img src="${disco.imagem}" alt="Capa" style="width: 50px; height: 50px; object-fit: cover;">` 
+                            : '📀'}
                     </td>
-                    <td>${disco.nome}<br><small class="text-muted">Intérpretes: ${interpretesTexto}</small></td>
+                    <td>
+                        <strong>${disco.nome}</strong>
+                        ${interpretePrincipalTexto 
+                            ? `<br><small>🎤 Artista principal: ${interpretePrincipalTexto}</small>` 
+                            : ''}
+                        
+                        ${interpretesTexto === 'Apenas o artista principal' 
+                            ? '<br><small>🎸 Apenas o artista principal</small>'
+                            : interpretesTexto !== 'Nenhuma música com intérprete' && interpretesTexto !== 'Erro ao carregar'
+                                ? `<br><small>🎸 Participações: ${interpretesTexto}</small>`
+                                : `<br><small>🎸 ${interpretesTexto}</small>`}
+                    </td>
                     <td>${dataFormatada}</td>
                     <td>${disco.gravadora_nome || '-'}</td>
                     <td>
-                        <button class="btn btn-info btn-sm" onclick="verMusicasDoDisco(${disco.disco_id})">
+                        <button class="btn btn-info btn-sm" 
+                                onclick="verMusicasDoDisco(${disco.disco_id})">
                             🎵 Músicas
                         </button>
                         <button class="btn btn-primary btn-sm" 
@@ -192,6 +219,13 @@ async function carregarDiscos() {
                 mensagem: 'Erro ao carregar discos: ' + erro.message
             })
         }
+        
+        tbodyDiscos.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px; color: red;">
+                    Erro ao carregar discos: ${erro.message}
+                </td>
+            </tr>`
     }
 };
 
