@@ -33,15 +33,15 @@ contextBridge.exposeInMainWorld("dialog", {
     exibirDialogConfirmacao: (dados) => ipcRenderer.invoke('dialog:confirmar:exibir', dados),
     exibirDialogEdicao: async (options) => {
         const config = await ipcRenderer.invoke('dialog:editar:exibir', options);
-    
+
         return new Promise((resolve) => {
-        const edicaoEvent = new CustomEvent('show-edicao-dialog', {
-            detail: {
-            ...config,
-            resolve
-            }
-        });
-        window.dispatchEvent(edicaoEvent);
+            const edicaoEvent = new CustomEvent('show-edicao-dialog', {
+                detail: {
+                    ...config,
+                    resolve
+                }
+            });
+            window.dispatchEvent(edicaoEvent);
         });
     }
 });
@@ -62,7 +62,7 @@ contextBridge.exposeInMainWorld("lojaMusica", {
         editar: (id, nome) => ipcRenderer.invoke("lojaMusica:gravadora:editar", id, nome),
         buscar: (id) => ipcRenderer.invoke("lojaMusica:gravadora:buscar", id),
         buscarPorNome: (nome) => ipcRenderer.invoke("lojaMusica:gravadora:buscarPorNome", nome)
-    }, 
+    },
     artista: {
         criar: (nome) => ipcRenderer.invoke("lojaMusica:artista:criar", nome),
         listar: () => ipcRenderer.invoke("lojaMusica:artista:listar"),
@@ -79,7 +79,7 @@ contextBridge.exposeInMainWorld("lojaMusica", {
         buscar: (id) => ipcRenderer.invoke("lojaMusica:musica:buscar", id),
         buscarInterpretes: (musicaId) => ipcRenderer.invoke("lojaMusica:musica:buscarInterpretes", musicaId),
         buscarCompositores: (musicaId) => ipcRenderer.invoke("lojaMusica:musica:buscarCompositores", musicaId)
-        
+
     },
     disco: {
         criar: (dados) => ipcRenderer.invoke("lojaMusica:disco:criar", dados),
@@ -92,7 +92,7 @@ contextBridge.exposeInMainWorld("lojaMusica", {
         getInterpretes: (discoId) => ipcRenderer.invoke("lojaMusica:disco:getInterpretes", discoId),
         musicas: {
             listar: (disco_id) => ipcRenderer.invoke("lojaMusica:disco:musicas:listar", disco_id),
-            adicionar: (disco_id, musica_id) => ipcRenderer.invoke("lojaMusica:disco:musicas:adicionar", disco_id, musica_id),
+            adicionar: (disco_id, musica_id, ordem) => ipcRenderer.invoke("lojaMusica:disco:musicas:adicionar", disco_id, musica_id, ordem),
             remover: (disco_id, musica_id) => ipcRenderer.invoke("lojaMusica:disco:musicas:remover", disco_id, musica_id),
             verificar: (disco_id, musica_id) => ipcRenderer.invoke("lojaMusica:disco:musicas:verificar", disco_id, musica_id)
         }

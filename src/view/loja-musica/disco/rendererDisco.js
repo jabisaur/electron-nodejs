@@ -74,12 +74,27 @@ async function carregarArtistas() {
         const artistas = await window.lojaMusica.artista.listar()
 
         if (artistas && artistas.length > 0) {
+            // Select do formulário principal
             selectInterprete.innerHTML = '<option value="">Selecione o intérprete principal...</option>'
+            
+            // Select do modal de edição
+            const selectInterpreteEdicao = document.getElementById('interprete_id_edicao')
+            if (selectInterpreteEdicao) {
+                selectInterpreteEdicao.innerHTML = '<option value="">Selecione o intérprete principal...</option>'
+            }
+            
             artistas.forEach(artista => {
                 selectInterprete.innerHTML += `<option value="${artista.artista_id}">${artista.nome}</option>`
+                if (selectInterpreteEdicao) {
+                    selectInterpreteEdicao.innerHTML += `<option value="${artista.artista_id}">${artista.nome}</option>`
+                }
             });
         } else {
             selectInterprete.innerHTML = '<option value="">Nenhum artista cadastrado</option>'
+            const selectInterpreteEdicao = document.getElementById('interprete_id_edicao')
+            if (selectInterpreteEdicao) {
+                selectInterpreteEdicao.innerHTML = '<option value="">Nenhum artista cadastrado</option>'
+            }
         }
 
     } catch (erro) {
@@ -590,10 +605,11 @@ if (formMusicaDisco) {
                 titulo: 'Campo obrigatório',
                 mensagem: 'Informe a ordem da música no disco'
             })
+            document.getElementById('ordem_musica').focus()
             return
         }
         
-        if (!discoEditandoId) {
+        if (!discoMusicasAbertoId) {
             window.dialog.exibirDialogMensagem({
                 titulo: 'Erro',
                 mensagem: 'Nenhum disco selecionado'
@@ -602,56 +618,58 @@ if (formMusicaDisco) {
         }
 
         try {
-            // verifica se já existe música nesta ordem
-            const musicasExistentes = await window.lojaMusica.disco.musicas.listar(discoEditandoId)
-            const ordemExistente = musicasExistentes.find(m => m.ordem === parseInt(ordem))
+            // Converte ordem para número
+            const ordemNum = parseInt(ordem)
+            
+            // Verifica se a ordem já está ocupada (essa verificação será feita no backend também)
+            const musicasExistentes = await window.lojaMusica.disco.musicas.listar(discoMusicasAbertoId)
+            const ordemExistente = musicasExistentes.find(m => m.ordem === ordemNum)
             
             if (ordemExistente) {
                 window.dialog.exibirDialogMensagem({
                     titulo: 'Ordem ocupada',
-                    mensagem: `Já existe uma música na ordem ${ordem}. Remova ou altere a ordem.`
+                    mensagem: `Já existe a música "${ordemExistente.nome}" na ordem ${ordemNum}. Escolha outra ordem.`
                 })
                 return
             }
 
-            // verifica se a música já esta no disco
-            const existe = await window.lojaMusica.disco.musicas.verificar(discoEditandoId, parseInt(musicaId))
-
-            if (existe) {
-                window.dialog.exibirDialogMensagem({
-                    titulo: 'Música já adicionada',
-                    mensagem: 'Esta música já está neste disco'
-                })
-                return
-            }
-
-            await window.lojaMusica.disco.musicas.adicionar(
-                discoEditandoId, 
+            // Adiciona a música
+            const resultado = await window.lojaMusica.disco.musicas.adicionar(
+                discoMusicasAbertoId, 
                 parseInt(musicaId),
-                parseInt(ordem)
+                ordemNum
             )
             
-            await carregarMusicasDoDisco(discoEditandoId)
+            console.log('Resultado da adição:', resultado)
+            
+            // Recarrega a lista de músicas do disco
+            await carregarMusicasDoDisco(discoMusicasAbertoId)
 
-            // limpar campos
+            // Limpar campos
             document.getElementById('musica_id').value = ''
             document.getElementById('ordem_musica').value = ''
 
             window.dialog.exibirDialogMensagem({
                 titulo: 'Sucesso',
-                mensagem: 'Música adicionada ao disco com sucesso!'
+                mensagem: `Música adicionada ao disco na ordem ${ordemNum}!`
             })
             
         } catch (erro) {
             console.error('Erro ao adicionar música:', erro)
+            
+            // Mensagem de erro mais amigável
+            let mensagemErro = erro.message
+            if (erro.message.includes('UNIQUE constraint failed')) {
+                mensagemErro = 'Esta música já está neste disco ou a ordem já está ocupada.'
+            }
+            
             window.dialog.exibirDialogMensagem({
                 titulo: 'Erro',
-                mensagem: 'Erro ao adicionar música: ' + erro.message
+                mensagem: mensagemErro
             })
-            
         }
     })
-};
+}
 
 async function carregarMusicasDoDisco(discoId) {
     try {
@@ -662,7 +680,7 @@ async function carregarMusicasDoDisco(discoId) {
             return
         }
 
-        // coloca as musicas do disco em ordem
+        // As músicas já vêm ordenadas do backend, mas vamos garantir
         musicas.sort((a, b) => (a.ordem || 999) - (b.ordem || 999))
 
         let html = '<ul class="list-group">'
@@ -671,7 +689,9 @@ async function carregarMusicasDoDisco(discoId) {
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
                         <span class="badge bg-secondary me-2">${musica.ordem || '?'}</span>
-                        ${musica.nome} - ${musica.duracao} <!-- Removido o estilo entre parênteses -->
+                        <strong>${musica.nome}</strong> 
+                        ${musica.duracao ? `- ${musica.duracao}` : ''}
+                        ${musica.estilo_nome ? `<br><small class="text-muted">${musica.estilo_nome}</small>` : ''}
                     </div>
                     <button class="btn btn-danger btn-sm" onclick="removerMusicaDoDisco(${discoId}, ${musica.musica_id})">
                         Remover
@@ -683,11 +703,35 @@ async function carregarMusicasDoDisco(discoId) {
         
         listaMusicasDisco.innerHTML = html
         
+        // Log para debug
+        console.log('Músicas carregadas na ordem:', musicas.map(m => ({ nome: m.nome, ordem: m.ordem })))
+        
     } catch (erro) {
         console.error('Erro ao carregar músicas do disco:', erro)
         listaMusicasDisco.innerHTML = '<p class="text-danger">Erro ao carregar músicas.</p>'   
     }
 };
+
+async function reordenarMusicas(discoId) {
+    try {
+        const musicas = await window.lojaMusica.disco.musicas.listar(discoId)
+        
+        // Cria um array com as ordens atuais
+        const ordensAtuais = musicas.map(m => m.ordem).sort((a, b) => a - b)
+        
+        // Verifica se há ordens duplicadas ou buracos na sequência
+        const ordensUnicas = [...new Set(ordensAtuais)]
+        if (ordensUnicas.length !== musicas.length) {
+            console.warn('Há ordens duplicadas!')
+        }
+        
+        // Mostra as ordens para debug
+        console.log('Ordens atuais:', ordensAtuais)
+        
+    } catch (erro) {
+        console.error('Erro ao verificar ordens:', erro)
+    }
+}
 
 async function removerMusicaDoDisco(discoId, musicaId) {
     const confirmado = await window.dialog.exibirDialogConfirmacao({

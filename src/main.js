@@ -16,7 +16,7 @@ const createWindow = () => {
     width: 1200,
     height: 800,
     webPreferences: {
-        preload: path.join(__dirname, "preload.js")
+      preload: path.join(__dirname, "preload.js")
     }
   })
 
@@ -56,19 +56,19 @@ const createIpcMain = () => {
     return response === 1
   });
   ipcMain.handle('dialog:editar:exibir', async (event, { titulo, mensagem, valorAtual, campoPlaceholder, btnCancelar, btnConfirmar }) => {
-  return {
-    titulo: titulo || 'Editar',
-    mensagem: mensagem || '',
-    valorAtual: valorAtual || '',
-    campoPlaceholder: campoPlaceholder || 'Digite o novo valor...',
-    btnCancelar: btnCancelar || 'Cancelar',
-    btnConfirmar: btnConfirmar || 'Salvar'
-  };
-});
+    return {
+      titulo: titulo || 'Editar',
+      mensagem: mensagem || '',
+      valorAtual: valorAtual || '',
+      campoPlaceholder: campoPlaceholder || 'Digite o novo valor...',
+      btnCancelar: btnCancelar || 'Cancelar',
+      btnConfirmar: btnConfirmar || 'Salvar'
+    };
+  });
 
   ipcMain.handle("contador:incrementar", () => {
     try {
-      return contadorService.incrementar();      
+      return contadorService.incrementar();
     } catch (erro) {
       return { erro: erro.message };
     }
@@ -77,13 +77,13 @@ const createIpcMain = () => {
     try {
       return contadorService.pegarValor();
     } catch (erro) {
-      return { erro: erro.message };  
-    } 
+      return { erro: erro.message };
+    }
   });
   ipcMain.handle("contador:zerar", () => {
     try {
       return contadorService.zerar();
-      
+
     } catch (erro) {
       return { erro: erro.message };
     }
@@ -93,28 +93,28 @@ const createIpcMain = () => {
     try {
       return calculadoraService.calcular(num1, num2, operacao);
     } catch (erro) {
-      return { erro: erro.message };     
+      return { erro: erro.message };
     }
   });
 
   // Estilo
   ipcMain.handle('lojaMusica:estilo:listar', async () => {
     try {
-        return await estiloService.listar();
+      return await estiloService.listar();
     } catch (erro) {
-        return { erro: erro.message };
+      return { erro: erro.message };
     }
   });
   ipcMain.handle("lojaMusica:estilo:criar", async (event, descricao) => {
     try {
-      return await estiloService.criar(descricao);      
+      return await estiloService.criar(descricao);
     } catch (erro) {
-      return { erro: erro.message };     
+      return { erro: erro.message };
     }
   });
   ipcMain.handle("lojaMusica:estilo:deletar", async (event, id) => {
     try {
-      return await estiloService.deletar(id);      
+      return await estiloService.deletar(id);
     } catch (erro) {
       return { erro: erro.message };
     }
@@ -123,66 +123,66 @@ const createIpcMain = () => {
     try {
       return await estiloService.editar(id, descricao)
     } catch (erro) {
-      return { erro: erro.message }      
-    }   
+      return { erro: erro.message }
+    }
   });
   ipcMain.handle("lojaMusica:estilo:buscar", async (event, id) => {
     try {
       return await estiloService.buscar(id)
     } catch (erro) {
-      return { erro: erro.message }      
-    }   
+      return { erro: erro.message }
+    }
   });
   ipcMain.handle("lojaMusica:estilo:buscarPorDescricao", async (event, descricao) => {
     try {
-        return await estiloService.buscarPorDescricao(descricao)
+      return await estiloService.buscarPorDescricao(descricao)
     } catch (erro) {
-        return { erro: erro.message }      
-    }   
+      return { erro: erro.message }
+    }
   });
 
   // Gravadora
   ipcMain.handle("lojaMusica:gravadora:criar", async (event, nome) => {
     try {
-      return await gravadoraService.criar(nome);      
+      return await gravadoraService.criar(nome);
     } catch (erro) {
-      return { erro: erro.message };     
+      return { erro: erro.message };
     }
   });
   ipcMain.handle("lojaMusica:gravadora:listar", async () => {
     try {
-      return await gravadoraService.listar();      
+      return await gravadoraService.listar();
     } catch (erro) {
-      return { erro: erro.message };     
+      return { erro: erro.message };
     }
   });
   ipcMain.handle("lojaMusica:gravadora:deletar", async (event, id) => {
     try {
-      return await gravadoraService.deletar(id);      
+      return await gravadoraService.deletar(id);
     } catch (erro) {
-      return { erro: erro.message };     
+      return { erro: erro.message };
     }
   });
   ipcMain.handle("lojaMusica:gravadora:editar", async (event, id, nome) => {
     try {
-      return await gravadoraService.editar(id, nome);      
+      return await gravadoraService.editar(id, nome);
     } catch (erro) {
-      return { erro: erro.message };     
+      return { erro: erro.message };
     }
   });
   ipcMain.handle("lojaMusica:gravadora:buscar", async (event, id) => {
     try {
-      return await gravadoraService.buscar(id);      
+      return await gravadoraService.buscar(id);
     } catch (erro) {
-      return { erro: erro.message };     
+      return { erro: erro.message };
     }
   });
   ipcMain.handle("lojaMusica:gravadora:buscarPorNome", async (event, nome) => {
     try {
-        return await gravadoraService.buscarPorNome(nome)
+      return await gravadoraService.buscarPorNome(nome)
     } catch (erro) {
-        return { erro: erro.message }      
-    }   
+      return { erro: erro.message }
+    }
   });
 
   // Artista
@@ -193,14 +193,14 @@ const createIpcMain = () => {
       return { erro: erro.message }
     }
   });
-  ipcMain.handle("lojaMusica:artista:listar", async() => {
+  ipcMain.handle("lojaMusica:artista:listar", async () => {
     try {
-      return await artistaService.listar()     
+      return await artistaService.listar()
     } catch (erro) {
       return { erro: erro.message }
     }
   });
-  ipcMain.handle("lojaMusica:artista:deletar", async(event, id) => {
+  ipcMain.handle("lojaMusica:artista:deletar", async (event, id) => {
     try {
       return await artistaService.deletar(id)
     } catch (erro) {
@@ -216,30 +216,30 @@ const createIpcMain = () => {
   });
   ipcMain.handle("lojaMusica:artista:buscar", async (event, id) => {
     try {
-      return await artistaService.buscar(id)     
+      return await artistaService.buscar(id)
     } catch (erro) {
-      return { erro: erro.message }   
+      return { erro: erro.message }
     }
   });
   ipcMain.handle("lojaMusica:artista:buscarPorNome", async (event, nome) => {
     try {
-        return await artistaService.buscarPorNome(nome)
+      return await artistaService.buscarPorNome(nome)
     } catch (erro) {
-        return { erro: erro.message }      
-    }   
+      return { erro: erro.message }
+    }
   });
 
   // Música
-  ipcMain.handle("lojaMusica:musica:criar", async (event, dados) =>{
+  ipcMain.handle("lojaMusica:musica:criar", async (event, dados) => {
     try {
       return await musicaService.criar(dados)
     } catch (erro) {
       return { erro: erro.message }
     }
   });
-  ipcMain.handle("lojaMusica:musica:listar", async() => {
+  ipcMain.handle("lojaMusica:musica:listar", async () => {
     try {
-      return await musicaService.listar()     
+      return await musicaService.listar()
     } catch (erro) {
       return { erro: erro.message }
     }
@@ -260,37 +260,37 @@ const createIpcMain = () => {
   });
   ipcMain.handle("lojaMusica:musica:buscar", async (event, id) => {
     try {
-      return await musicaService.buscar(id)     
+      return await musicaService.buscar(id)
     } catch (erro) {
-      return { erro: erro.message }   
+      return { erro: erro.message }
     }
   });
   ipcMain.handle("lojaMusica:musica:buscarInterpretes", async (event, musicaId) => {
     try {
-        return await musicaService.buscarInterpretes(musicaId)
+      return await musicaService.buscarInterpretes(musicaId)
     } catch (erro) {
-        return { erro: erro.message }      
-    }   
+      return { erro: erro.message }
+    }
   });
   ipcMain.handle("lojaMusica:musica:buscarCompositores", async (event, musicaId) => {
     try {
-        return await musicaService.buscarCompositores(musicaId)
+      return await musicaService.buscarCompositores(musicaId)
     } catch (erro) {
-        return { erro: erro.message }      
-    }   
+      return { erro: erro.message }
+    }
   });
 
   // Disco
-  ipcMain.handle("lojaMusica:disco:criar", async (event, dados) =>{
+  ipcMain.handle("lojaMusica:disco:criar", async (event, dados) => {
     try {
       return await discoService.criar(dados)
     } catch (erro) {
       return { erro: erro.message }
     }
   });
-  ipcMain.handle("lojaMusica:disco:listar", async() => {
+  ipcMain.handle("lojaMusica:disco:listar", async () => {
     try {
-      return await discoService.listar()     
+      return await discoService.listar()
     } catch (erro) {
       return { erro: erro.message }
     }
@@ -311,102 +311,102 @@ const createIpcMain = () => {
   });
   ipcMain.handle("lojaMusica:disco:buscar", async (event, id) => {
     try {
-      return await discoService.buscar(id)     
+      return await discoService.buscar(id)
     } catch (erro) {
-      return { erro: erro.message }   
+      return { erro: erro.message }
     }
   });
   ipcMain.handle("lojaMusica:disco:buscarPorNome", async (event, nome) => {
     try {
-        return await discoService.buscarPorNome(nome)
+      return await discoService.buscarPorNome(nome)
     } catch (erro) {
-        return { erro: erro.message }      
-    }   
-});
-ipcMain.handle("lojaMusica:disco:buscarPorNomeEInterpretes", async (event, nome, interpreteIds) => {
+      return { erro: erro.message }
+    }
+  });
+  ipcMain.handle("lojaMusica:disco:buscarPorNomeEInterpretes", async (event, nome, interpreteIds) => {
     try {
-        return await discoService.buscarPorNomeEInterpretes(nome, interpreteIds)
+      return await discoService.buscarPorNomeEInterpretes(nome, interpreteIds)
     } catch (erro) {
-        return { erro: erro.message }      
-    }   
-});
-ipcMain.handle("lojaMusica:disco:getInterpretes", async (event, discoId) => {
+      return { erro: erro.message }
+    }
+  });
+  ipcMain.handle("lojaMusica:disco:getInterpretes", async (event, discoId) => {
     try {
-        return await discoService.getInterpretesDoDisco(discoId)
+      return await discoService.getInterpretesDoDisco(discoId)
     } catch (erro) {
-        return { erro: erro.message }      
-    }   
-});
+      return { erro: erro.message }
+    }
+  });
 
   // Disco-Musicas
   ipcMain.handle('lojaMusica:disco:musicas:listar', async (event, disco_id) => {
     try {
-        return await discoService.musicas.listar(disco_id)
+      return await discoService.musicas.listar(disco_id)
     } catch (erro) {
-        return { erro: erro.message }
+      return { erro: erro.message }
     }
   });
-  ipcMain.handle('lojaMusica:disco:musicas:adicionar', async (event, disco_id, musica_id) => {
+  ipcMain.handle('lojaMusica:disco:musicas:adicionar', async (event, disco_id, musica_id, ordem) => {
     try {
-        return await discoService.musicas.adicionar(disco_id, musica_id)
+      return await discoService.musicas.adicionar(disco_id, musica_id, ordem)
     } catch (erro) {
-        return { erro: erro.message }
+      return { erro: erro.message }
     }
   });
   ipcMain.handle('lojaMusica:disco:musicas:remover', async (event, disco_id, musica_id) => {
     try {
-        return await discoService.musicas.remover(disco_id, musica_id)
+      return await discoService.musicas.remover(disco_id, musica_id)
     } catch (erro) {
-        return { erro: erro.message }
+      return { erro: erro.message }
     }
   });
   ipcMain.handle('lojaMusica:disco:musicas:verificar', async (event, disco_id, musica_id) => {
     try {
-        return await discoService.musicas.verificar(disco_id, musica_id)
+      return await discoService.musicas.verificar(disco_id, musica_id)
     } catch (erro) {
-        return { erro: erro.message }
+      return { erro: erro.message }
     }
   });
 
   // Busca
   ipcMain.handle('lojaMusica:busca:global', async (event, termo) => {
     try {
-        return await buscaService.buscaGlobal(termo)
+      return await buscaService.buscaGlobal(termo)
     } catch (erro) {
-        return { erro: erro.message }
+      return { erro: erro.message }
     }
   });
   ipcMain.handle('lojaMusica:busca:artistasComPapeis', async () => {
     try {
-        return await buscaService.artistasComPapeis()
+      return await buscaService.artistasComPapeis()
     } catch (erro) {
-        return { erro: erro.message }
+      return { erro: erro.message }
     }
   });
   ipcMain.handle('lojaMusica:busca:artistasFiltrados', async (event, filtros) => {
     try {
-        return await buscaService.artistasFiltrados(filtros)
+      return await buscaService.artistasFiltrados(filtros)
     } catch (erro) {
-        return { erro: erro.message }
+      return { erro: erro.message }
     }
   });
   ipcMain.handle('lojaMusica:busca:discosCompletos', async (event, filtros) => {
     try {
-        return await buscaService.discosCompletos(filtros)
+      return await buscaService.discosCompletos(filtros)
     } catch (erro) {
-        return { erro: erro.message }
+      return { erro: erro.message }
     }
   });
   ipcMain.handle('lojaMusica:busca:musicasComDetalhes', async (event, filtros) => {
     try {
-        return await buscaService.musicasComDetalhes(filtros)
+      return await buscaService.musicasComDetalhes(filtros)
     } catch (erro) {
-        return { erro: erro.message }
+      return { erro: erro.message }
     }
   });
 }
 
-app.whenReady().then( () => {
+app.whenReady().then(() => {
   createIpcMain()
   createWindow()
 })

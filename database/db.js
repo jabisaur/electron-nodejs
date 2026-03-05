@@ -47,9 +47,11 @@ db.run(`
     data_lancamento DATE NOT NULL,
     imagem TEXT,
     gravadora_id INT,
+    interprete_principal_id INT
 
     -- regra de chave estrangeira
-    FOREIGN KEY (gravadora_id) REFERENCES gravadora (gravadora_id)
+    FOREIGN KEY (gravadora_id) REFERENCES gravadora (gravadora_id),
+    FOREIGN KEY (interprete_principal_id) REFERENCES artista (artista_id)
 
 );
     
