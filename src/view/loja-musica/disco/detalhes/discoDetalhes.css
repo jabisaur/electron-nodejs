@@ -1,0 +1,159 @@
+.capa-disco {
+    max-width: 250px;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.info-box {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 4px solid #007bff;
+    transition: box-shadow 0.2s;
+}
+
+.info-box:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.faixa-item {
+    border-left: 3px solid #007bff;
+    margin-bottom: 10px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 0 8px 8px 0;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.faixa-item:hover {
+    transform: translateX(5px);
+    background-color: #e9ecef;
+}
+
+.badge-papel {
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    margin-right: 5px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.artista-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.artista-link:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
+
+.gravadora-link {
+    color: #28a745;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.gravadora-link:hover {
+    text-decoration: underline;
+    color: #1e7e34;
+}
+
+.edit-icon {
+    color: #6c757d;
+    transition: color 0.2s;
+}
+
+.edit-icon:hover {
+    color: #007bff;
+}
+
+.duracao-total {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #28a745;
+    background-color: #f8f9fa;
+    padding: 8px 15px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.musica-titulo {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.musica-duracao {
+    font-family: monospace;
+    font-size: 1rem;
+    background-color: #e9ecef;
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+
+.ordem-badge {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 40px;
+    text-align: center;
+    display: inline-block;
+}
+
+.participacoes-section {
+    background-color: #e3f2fd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 5px;
+}
+
+.compositores-section {
+    background-color: #fff3e0;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 5px;
+}
+
+.estilo-badge {
+    background-color: #6c757d;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.loading-spinner .spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 15px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.sem-info {
+    color: #6c757d;
+    font-style: italic;
+}
