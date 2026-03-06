@@ -329,4 +329,4 @@ function abrirModalConfirmacao(titulo, mensagem, callback) {
 window.fecharModalConfirmacao = function() {
     elementos.confirmacaoModal.style.display = 'none';
     acaoConfirmarCallback = null;
-}
+};
