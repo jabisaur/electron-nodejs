@@ -4,88 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artistas | Empire Records</title>
-    <link rel="stylesheet" href="../css/estilo.css">
     <link rel="stylesheet" href="../../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/breadcrumb.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/modal.css">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <ul class="nav-links navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../cadastro/cadastro.html">Cadastro</a>
-                    </li>
-                </ul>
+                <a class="navbar-brand" href="../index.html">
+                    <i class="bi bi-disc"></i> Empire Records
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../cadastro/cadastro.html">Cadastro</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../buscar/buscar.html">Busca</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../artista/artistaListar.html">Lista de Artistas</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
     </header>
-    <main>
-        <div class="container">
-        <h1>🎵 Gerenciar Artistas</h1>
-        
-        <!-- Formulário de cadastro -->
-        <div class="form-group">
-            <h2>Cadastrar Novo Artista</h2>
-            <form id="form-artista">
-                <input type="text" name="nome" placeholder="Digite o nome do artista" autofocus>
-                <button type="submit">Salvar</button>
-            </form>
+
+    <main class="container mt-4">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="../index.html"><i class="bi bi-house-door"></i> Home</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="../cadastro/cadastro.html">Cadastro</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <i class="bi bi-person"></i> Artistas
+                    </li>
+                </ol>
+            </nav>
         </div>
-        
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="page-title">
+                <i class="bi bi-person"></i> Gerenciar Artistas
+            </h1>
+            <div>
+                <a href="../artista/artistaListar.html" class="btn btn-info me-2">
+                    <i class="bi bi-list"></i> Ver Lista Completa
+                </a>
+                <a href="../cadastro/cadastro.html" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+
+        <!-- Formulário de cadastro -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h2 class="h5 mb-0"><i class="bi bi-plus-circle"></i> Cadastrar Novo Artista</h2>
+            </div>
+            <div class="card-body">
+                <form id="form-artista">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Nome do Artista</label>
+                                <input type="text" class="form-control" id="nome" name="nome" 
+                                       placeholder="Digite o nome do artista" autofocus required>
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-warning w-100">
+                                <i class="bi bi-save"></i> Salvar Artista
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Lista de artistas -->
-        <h2>Artistas Cadastrados</h2>
-        
-        <table id="lista-artistas">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="tbody-artistas">
-                <tr>
-                    <td colspan="3" style="text-align: center; padding: 20px;">
-                        Nenhum artista cadastrado ainda.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <!-- Modal de Edição de Artista -->
-    <div id="edicaoArtistaModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="edicaoTitulo">Editar Artista</h3>
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h2 class="h5 mb-0"><i class="bi bi-list"></i> Últimos Artistas Cadastrados</h2>
             </div>
-            <div class="modal-body">
-                <p id="edicaoMensagem"></p>
-            
-                <div class="valor-atual-info">
-                    <strong>Nome atual:</strong>
-                    <span id="valorAtualTexto"></span>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="lista-artistas">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-artistas">
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    <div class="spinner-border text-warning" role="status">
+                                        <span class="visually-hidden">Carregando...</span>
+                                    </div>
+                                    <br>Carregando artistas...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            
-                <div class="form-group">
-                    <label for="edicaoInput">Novo nome:</label>
-                    <input 
-                        type="text" 
-                        id="edicaoInput" 
-                        class="edicao-input"
-                        placeholder="Digite o novo nome do artista..."
-                    />
+                <div class="text-center mt-3">
+                    <a href="../artista/artistaListar.html" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-right"></i> Ver todos os artistas
+                    </a>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button id="edicaoBtnCancelar" class="btn-cancelar">Cancelar</button>
-                <button id="edicaoBtnConfirmar" class="btn-confirmar">Salvar</button>
             </div>
         </div>
     </main>
 
+    <!-- Modal de Edição -->
+    <div id="edicaoArtistaModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="edicaoTitulo">Editar Artista</h3>
+                <button class="close-btn" onclick="fecharModalEdicao()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="edicaoMensagem" class="text-muted mb-3"></p>
+            
+                <div class="card bg-light mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0"><i class="bi bi-info-circle"></i> Informações Atuais</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="valor-atual-info">
+                            <strong>Nome atual:</strong>
+                            <span id="valorAtualTexto" class="text-primary d-block mt-1"></span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="form-group">
+                    <label for="edicaoInput" class="form-label">Novo nome:</label>
+                    <input type="text" id="edicaoInput" class="form-control edicao-input"
+                           placeholder="Digite o novo nome do artista...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="fecharModalEdicao()">
+                    <i class="bi bi-x-lg"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-warning" id="edicaoBtnConfirmar">
+                    <i class="bi bi-check-lg"></i> Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="rendererArtista.js"></script>
 </body>
 </html>
