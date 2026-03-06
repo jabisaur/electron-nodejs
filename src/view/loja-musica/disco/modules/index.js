@@ -1,6 +1,5 @@
 import { 
     configurarEventListeners, 
-    carregarDiscos,
     discoEditandoId,
     discoEditandoResolve,
     discoEditandoDados,
@@ -8,7 +7,7 @@ import {
 } from './core.js';
 import { carregarGravadoras, carregarArtistas, carregarMusicasParaSelect } from './selects.js';
 import { configurarModalEdicao } from './modal.js';
-import { configurarFormularioDisco } from './discos.js';
+import { configurarFormularioDisco, carregarDiscos } from './discos.js';
 import { configurarFormularioMusicas } from './musicas.js';
 
 // função de inicialização única

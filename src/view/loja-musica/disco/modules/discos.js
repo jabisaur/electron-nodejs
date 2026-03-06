@@ -170,6 +170,9 @@ export async function editarDisco(id, dados) {
             titulo: 'Sucesso',
             mensagem: `Disco atualizado para: "${discoAtualizado.nome}"!`
         });
+
+        fecharModalEdicao()
+        
     } catch (erro) {
         console.error('Erro ao editar disco:', erro);
         window.dialog.exibirDialogMensagem({
