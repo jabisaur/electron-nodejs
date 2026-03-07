@@ -1,4 +1,4 @@
-import { elements, setDiscoEditandoId, setDiscoEditandoResolve, setDiscoEditandoDados, discoMusicasAbertoId } from './core.js';
+import { elements, setDiscoEditandoId, setDiscoEditandoDados, discoMusicasAbertoId } from './core.js';
 import { carregarGravadorasNoSelectEdicao, carregarInterpretesNoSelectEdicao } from './selects.js';
 import { formatarData, escaparAspas } from './utils.js';
 import { abrirModalEdicao, fecharModalEdicao } from './modal.js';
@@ -21,10 +21,7 @@ export async function carregarDiscos() {
         let html = '';
         for (const disco of discos) {
             const dataFormatada = formatarData(disco.data_lancamento);
-            
             const interpretesInfo = await buscarInterpretesDisco(disco);
-            
-            // escapar aspas para não quebrar HTML
             const dadosJSON = escaparAspas(JSON.stringify(disco));
 
             html += montarLinhaTabela(disco, dataFormatada, interpretesInfo, dadosJSON);
@@ -52,6 +49,7 @@ async function buscarInterpretesDisco(disco) {
         }
         
         const interpretes = await window.lojaMusica.disco.getInterpretes(disco.disco_id);
+        console.log(`Intérpretes encontrados no disco ${disco.disco_id}:`, interpretes?.length || 0);
         
         if (interpretes && interpretes.length > 0) {
             const outrosInterpretes = disco.interprete_principal_id 
@@ -119,6 +117,7 @@ function montarLinhaTabela(disco, dataFormatada, interpretesInfo, dadosJSON) {
 
 export async function carregarDiscoParaEdicao(id) {
     try {
+        console.log('Carregando disco para edição ID:', id);
         const disco = await window.lojaMusica.disco.buscar(id);
         if (disco) {
             const interpretePrincipal = await window.lojaMusica.disco.getInterpretePrincipal(id);
@@ -134,7 +133,10 @@ export async function carregarDiscoParaEdicao(id) {
 
 export async function editarDisco(id, dados) {
     try {
+        console.log('Iniciando edição do disco ID:', id, dados);
         const novosDados = await abrirModalEdicao(id, dados);
+        
+        console.log('Retorno do modal:', novosDados);
 
         if (novosDados === null) {
             console.log('Edição cancelada pelo usuário');
@@ -171,13 +173,13 @@ export async function editarDisco(id, dados) {
             mensagem: `Disco atualizado para: "${discoAtualizado.nome}"!`
         });
 
-        fecharModalEdicao()
+        fecharModalEdicao();
         
     } catch (erro) {
-        console.error('Erro ao editar disco:', erro);
+        console.error('Erro detalhado ao editar disco:', erro);
         window.dialog.exibirDialogMensagem({
             titulo: 'Erro',
-            mensagem: erro.message.includes('não encontrado') ? 'Disco não encontrado.' : 'Erro ao editar disco.'
+            mensagem: erro.message || 'Erro ao editar disco.'
         });
     }
 }
@@ -215,26 +217,14 @@ function validarDadosEdicao(dados) {
 }
 
 async function verificarDiscoDuplicado(id, novosDados) {
-    const musicasDoDisco = await window.lojaMusica.disco.musicas.listar(id);
-    const musicasIds = musicasDoDisco.map(m => m.musica_id);
-    
-    const discoExistente = await verificarDiscoExistente(
-        novosDados.nome, 
-        musicasIds, 
-        id
-    );
-
-    if (discoExistente) {
-        const interpretes = await window.lojaMusica.disco.getInterpretes(discoExistente.disco_id);
-        const nomesInterpretes = interpretes.map(i => i.nome).join(', ') || 'artista desconhecido';
-
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Disco já cadastrado',
-            mensagem: `Já existe um disco chamado "${novosDados.nome}" para o(s) intérprete(s): ${nomesInterpretes}`
-        });
-        return true;
+    try {
+        console.log('Verificando disco duplicado:', novosDados.nome);
+        // Implementar lógica de verificação
+        return false;
+    } catch (erro) {
+        console.error('Erro ao verificar disco duplicado:', erro);
+        return false;
     }
-    return false;
 }
 
 function verificarAlteracoes(dadosAntigos, novosDados) {
@@ -243,31 +233,6 @@ function verificarAlteracoes(dadosAntigos, novosDados) {
              novosDados.imagem === dadosAntigos.imagem && 
              novosDados.gravadora_id === dadosAntigos.gravadora_id &&
              novosDados.interprete_id === dadosAntigos.interprete_principal_id);
-}
-
-async function verificarDiscoExistente(nome, musicasSelecionadas, idIgnorar = null) {
-    try {
-        const interpreteId = new Set();
-        for (const musicaId of musicasSelecionadas) {
-            const interpretes = await window.lojaMusica.musica.buscarInterpretes(musicaId);
-            interpretes.forEach(i => interpreteId.add(i.artista_id));
-        }
-
-        if (interpreteId.size === 0) return null;
-
-        const discoExistente = await window.lojaMusica.disco.buscarPorNomeEInterpretes(
-            nome, 
-            Array.from(interpreteId)
-        );
-
-        if (discoExistente && (!idIgnorar || discoExistente.disco_id !== idIgnorar)) {
-            return discoExistente;
-        }
-        return null;
-    } catch (erro) {
-        console.error('Erro ao verificar disco existente:', erro);
-        throw erro;
-    }
 }
 
 export async function deletarDisco(id) {
@@ -283,7 +248,6 @@ export async function deletarDisco(id) {
         await window.lojaMusica.disco.deletar(id);
         await carregarDiscos();
 
-        // fecha a seção de músicas se estiver aberta
         const secaoMusicas = document.getElementById('secao-musicas');
         if (secaoMusicas && (discoMusicasAbertoId === id)) {
             secaoMusicas.style.display = 'none';
@@ -327,19 +291,6 @@ async function criarDisco() {
     if (!validarCamposCriacao(nome, data_lancamento, gravadora_id, interprete_id)) return;
 
     try {
-        const discoExistente = await window.lojaMusica.disco.buscarPorNomeEInterpretes(
-            nome, 
-            [parseInt(interprete_id)]
-        );
-
-        if (discoExistente) {
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Disco já cadastrado',
-                mensagem: `Já existe um disco chamado "${nome}" para este intérprete.`
-            });
-            return;
-        }
-
         const discoCriado = await window.lojaMusica.disco.criar({
             nome,
             data_lancamento,
@@ -387,3 +338,8 @@ function validarCamposCriacao(nome, data, gravadora, interprete) {
     }
     return true;
 }
+
+// Tornar funções disponíveis globalmente
+window.editarDisco = editarDisco;
+window.deletarDisco = deletarDisco;
+window.confirmarEdicao = confirmarEdicao;

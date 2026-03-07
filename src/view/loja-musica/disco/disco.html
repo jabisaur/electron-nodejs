@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="../css/breadcrumb.css">
     <link rel="stylesheet" href="../css/modal.css">
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -77,7 +79,8 @@
 
                         <div class="col-md-6 mb-3">
                             <label for="data_lancamento" class="form-label">Data de Lançamento</label>
-                            <input type="date" class="form-control" id="data_lancamento" name="data_lancamento" required>
+                            <input type="date" class="form-control" id="data_lancamento" name="data_lancamento"
+                                required>
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -147,7 +150,8 @@
         <div id="secao-musicas" style="display: none; margin-top: 30px;">
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h2 class="h5 mb-0"><i class="bi bi-music-note-beamed"></i> <span id="titulo-secao-musicas">Músicas do Disco</span></h2>
+                    <h2 class="h5 mb-0"><i class="bi bi-music-note-beamed"></i> <span id="titulo-secao-musicas">Músicas
+                            do Disco</span></h2>
                 </div>
                 <div class="card-body">
                     <form id="form-musica-disco" class="row g-3 mb-3">
@@ -157,7 +161,8 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <input type="number" class="form-control" id="ordem_musica" placeholder="Ordem" min="1" required>
+                            <input type="number" class="form-control" id="ordem_musica" placeholder="Ordem" min="1"
+                                required>
                         </div>
                         <div class="col-md-4">
                             <button type="submit" class="btn btn-success">
@@ -181,9 +186,8 @@
                 <h3 id="edicaoTitulo">Editar Disco</h3>
                 <button class="close-btn" onclick="fecharModalEdicao()">&times;</button>
             </div>
-            
+
             <div class="modal-body">
-                <p id="edicaoMensagem" class="text-muted mb-3"></p>
 
                 <!-- Card com informações atuais -->
                 <div class="card bg-light mb-4">
@@ -214,15 +218,15 @@
 
                 <!-- Formulário de edição -->
                 <h5 class="mb-3"><i class="bi bi-pencil-square"></i> Novas Informações</h5>
-                
+
                 <div class="row">
                     <!-- Nome do Disco -->
                     <div class="col-md-12 mb-3">
                         <label for="edicaoNome" class="form-label">
                             <i class="bi bi-disc"></i> Novo Nome do Disco
                         </label>
-                        <input type="text" class="form-control" id="edicaoNome" 
-                               placeholder="Digite o novo nome do disco...">
+                        <input type="text" class="form-control" id="edicaoNome"
+                            placeholder="Digite o novo nome do disco...">
                     </div>
 
                     <!-- Data de Lançamento -->
@@ -259,8 +263,8 @@
                         <label for="edicaoImagem" class="form-label">
                             <i class="bi bi-image"></i> Nova URL da Imagem (opcional)
                         </label>
-                        <input type="url" class="form-control" id="edicaoImagem" 
-                               placeholder="https://exemplo.com/capa.jpg">
+                        <input type="url" class="form-control" id="edicaoImagem"
+                            placeholder="https://exemplo.com/capa.jpg">
                         <small class="text-muted">Deixe em branco para manter a imagem atual</small>
                     </div>
                 </div>
@@ -270,7 +274,7 @@
                 <button type="button" class="btn btn-secondary" onclick="fecharModalEdicao()">
                     <i class="bi bi-x-lg"></i> Cancelar
                 </button>
-                <button type="button" class="btn btn-primary" id="edicaoBtnConfirmar">
+                <button type="button" class="btn btn-primary" id="edicaoBtnConfirmar" onclick="confirmarEdicao()">
                     <i class="bi bi-check-lg"></i> Salvar Alterações
                 </button>
             </div>
@@ -280,4 +284,5 @@
     <script src="../../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="rendererDisco.js"></script>
 </body>
+
 </html>

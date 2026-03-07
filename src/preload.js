@@ -69,8 +69,15 @@ contextBridge.exposeInMainWorld("lojaMusica", {
         deletar: (id) => ipcRenderer.invoke("lojaMusica:artista:deletar", id),
         editar: (id, nome) => ipcRenderer.invoke("lojaMusica:artista:editar", id, nome),
         buscar: (id) => ipcRenderer.invoke("lojaMusica:artista:buscar", id),
-        buscarPorNome: (nome) => ipcRenderer.invoke("lojaMusica:artista:buscarPorNome", nome)
+        buscarPorNome: (nome) => ipcRenderer.invoke("lojaMusica:artista:buscarPorNome", nome),
+        buscarPapeis: (artistaId) => ipcRenderer.invoke("lojaMusica:artista:buscarPapeis", artistaId),
+        associarPapeis: (artistaId, interprete, compositor) => 
+            ipcRenderer.invoke("lojaMusica:artista:associarPapeis", artistaId, interprete, compositor),
+        removerTodosPapeis: (artistaId) => ipcRenderer.invoke("lojaMusica:artista:removerTodosPapeis", artistaId),
+        verificarPapel: (artistaId, papel) => ipcRenderer.invoke("lojaMusica:artista:verificarPapel", artistaId, papel),
+        listarComPapeis: () => ipcRenderer.invoke("lojaMusica:artista:listarComPapeis")
     },
+
     musica: {
         criar: (dados) => ipcRenderer.invoke("lojaMusica:musica:criar", dados),
         listar: () => ipcRenderer.invoke("lojaMusica:musica:listar"),

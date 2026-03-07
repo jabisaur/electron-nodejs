@@ -411,6 +411,46 @@ const createIpcMain = () => {
       return { erro: erro.message }
     }
   });
+
+  ipcMain.handle("lojaMusica:artista:buscarPapeis", async (event, artistaId) => {
+    try {
+      return await associarPapeisService.buscarPapeis(artistaId)
+    } catch (erro) {
+      return { erro: erro.message }
+    }
+  });
+
+  ipcMain.handle("lojaMusica:artista:associarPapeis", async (event, artistaId, interprete, compositor) => {
+    try {
+      return await associarPapeisService.associarPapeis(artistaId, interprete, compositor)
+    } catch (erro) {
+      return { erro: erro.message }
+    }
+  });
+
+  ipcMain.handle("lojaMusica:artista:removerTodosPapeis", async (event, artistaId) => {
+    try {
+      return await associarPapeisService.removerTodosPapeis(artistaId)
+    } catch (erro) {
+      return { erro: erro.message }
+    }
+  });
+
+  ipcMain.handle("lojaMusica:artista:verificarPapel", async (event, artistaId, papel) => {
+    try {
+      return await associarPapeisService.verificarPapel(artistaId, papel)
+    } catch (erro) {
+      return { erro: erro.message }
+    }
+  });
+
+  ipcMain.handle("lojaMusica:artista:listarComPapeis", async () => {
+    try {
+      return await associarPapeisService.listarArtistasComPapeis()
+    } catch (erro) {
+      return { erro: erro.message }
+    }
+  });
 }
 
 app.whenReady().then(() => {
