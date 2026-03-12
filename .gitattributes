@@ -1,0 +1,87 @@
+# Configurações básicas
+* text=auto charset=utf-8
+
+# Código fonte - sempre LF para consistência
+*.js text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.sql text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Arquivos de configuração
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf
+.env.example text eol=lf
+
+# Arquivos de documentação
+*.txt text eol=lf
+*.rst text eol=lf
+*.markdown text eol=lf
+
+# Banco de dados - binários (NÃO versionar, mas se versionar, tratar como binário)
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+*.db-journal binary
+
+# Imagens - binários
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.webp binary
+
+# Fontes - binários
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+
+# Arquivos de build/distribuição - binários
+*.exe binary
+*.dmg binary
+*.deb binary
+*.AppImage binary
+*.snap binary
+*.dll binary
+*.so binary
+*.dylib binary
+
+# Arquivos compactados - binários
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.rar binary
+
+# Arquivos de log - tratar como texto mas com cuidado
+*.log text
+
+# Específicos do seu projeto
+# Os scripts SQL podem ser diff normais
+docs/*.sql text diff
+
+# O DER é imagem - binário
+docs/*.png binary
+
+# Pasta database (se por acaso algo for versionado)
+database/*.sql text diff
+database/*.js text eol=lf
+
+# Pasta service
+src/service/**/*.js text eol=lf
+
+# Pasta view
+src/view/**/*.html text eol=lf
+src/view/**/*.js text eol=lf
+src/view/**/*.css text eol=lf
+
+# Marcar arquivos gerados para não fazer diff
+package-lock.json -diff
+yarn.lock -diff

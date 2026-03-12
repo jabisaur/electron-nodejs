@@ -1,0 +1,143 @@
+const { contextBridge, ipcRenderer } = require("electron");
+
+contextBridge.exposeInMainWorld("versao", {
+    chrome: process.versions.chrome,
+    node: process.versions.node,
+    electron: process.versions.electron
+});
+
+contextBridge.exposeInMainWorld("contador", {
+    incrementar: () => {
+        return ipcRenderer.invoke("contador:incrementar")
+    },
+    zerar: () => {
+        return ipcRenderer.invoke("contador:zerar")
+    },
+    pegarValor: () => {
+        return ipcRenderer.invoke("contador:pegarValor")
+    }
+});
+
+contextBridge.exposeInMainWorld("calculadora", {
+    calcular: ({ num1, num2, operacao }) => {
+        return ipcRenderer.invoke("calculadora:calcular", {
+            num1,
+            num2,
+            operacao
+        })
+    }
+});
+
+contextBridge.exposeInMainWorld("dialog", {
+    exibirDialogMensagem: (dados) => ipcRenderer.send('dialog:mensagem:exibir', dados),
+    exibirDialogConfirmacao: (dados) => ipcRenderer.invoke('dialog:confirmar:exibir', dados),
+    exibirDialogEdicao: async (options) => {
+        const config = await ipcRenderer.invoke('dialog:editar:exibir', options);
+
+        return new Promise((resolve) => {
+            const edicaoEvent = new CustomEvent('show-edicao-dialog', {
+                detail: {
+                    ...config,
+                    resolve
+                }
+            });
+            window.dispatchEvent(edicaoEvent);
+        });
+    }
+});
+
+contextBridge.exposeInMainWorld("lojaMusica", {
+    estilo: {
+        criar: (descricao) => ipcRenderer.invoke("lojaMusica:estilo:criar", descricao),
+        listar: () => ipcRenderer.invoke("lojaMusica:estilo:listar"),
+        deletar: (id) => {
+            console.log('>>> [PRELOAD] Deletando estilo ID:', id);
+            return ipcRenderer.invoke("lojaMusica:estilo:deletar", id);
+        },
+        editar: (id, descricao) => ipcRenderer.invoke("lojaMusica:estilo:editar", id, descricao),
+        buscar: (id) => ipcRenderer.invoke("lojaMusica:estilo:buscar", id),
+        buscarPorDescricao: (descricao) => ipcRenderer.invoke("lojaMusica:estilo:buscarPorDescricao", descricao)
+    },
+
+    gravadora: {
+        criar: (nome) => ipcRenderer.invoke("lojaMusica:gravadora:criar", nome),
+        listar: () => ipcRenderer.invoke("lojaMusica:gravadora:listar"),
+        deletar: (id) => {
+            console.log('>>> [PRELOAD] Deletando gravadora ID:', id);
+            return ipcRenderer.invoke("lojaMusica:gravadora:deletar", id);
+        },
+        editar: (id, nome) => ipcRenderer.invoke("lojaMusica:gravadora:editar", id, nome),
+        buscar: (id) => ipcRenderer.invoke("lojaMusica:gravadora:buscar", id),
+        buscarPorNome: (nome) => ipcRenderer.invoke("lojaMusica:gravadora:buscarPorNome", nome)
+    },
+
+    artista: {
+        criar: (nome) => ipcRenderer.invoke("lojaMusica:artista:criar", nome),
+        listar: () => ipcRenderer.invoke("lojaMusica:artista:listar"),
+        deletar: (id) => {
+            console.log('>>> [PRELOAD] Deletando artista ID:', id);
+            return ipcRenderer.invoke("lojaMusica:artista:deletar", id);
+        },
+        editar: (id, nome) => ipcRenderer.invoke("lojaMusica:artista:editar", id, nome),
+        buscar: (id) => ipcRenderer.invoke("lojaMusica:artista:buscar", id),
+        buscarPorNome: (nome) => ipcRenderer.invoke("lojaMusica:artista:buscarPorNome", nome),
+        buscarPapeis: (artistaId) => ipcRenderer.invoke("lojaMusica:artista:buscarPapeis", artistaId),
+        verificarPapel: (artistaId, papel) => ipcRenderer.invoke("lojaMusica:artista:verificarPapel", artistaId, papel),
+        listarComPapeis: () => ipcRenderer.invoke("lojaMusica:artista:listarComPapeis")
+    },
+
+    papel: {
+        associar: (artistaId, musicaId, papel) =>
+            ipcRenderer.invoke("lojaMusica:papel:associar", artistaId, musicaId, papel),
+        desassociar: (artistaId, musicaId, papel) =>
+            ipcRenderer.invoke("lojaMusica:papel:desassociar", artistaId, musicaId, papel),
+        listarMusicas: (artistaId) =>
+            ipcRenderer.invoke("lojaMusica:papel:listarMusicas", artistaId),
+        listarArtistasDetalhados: () =>
+            ipcRenderer.invoke("lojaMusica:papel:listarArtistasDetalhados")
+    },
+
+    musica: {
+        criar: (dados) => ipcRenderer.invoke("lojaMusica:musica:criar", dados),
+        listar: () => ipcRenderer.invoke("lojaMusica:musica:listar"),
+        deletar: (id) => ipcRenderer.invoke("lojaMusica:musica:deletar", id),
+        deletarMultiplas: (ids) => {
+            console.log('>>> [PRELOAD] Deletando múltiplas músicas:', ids);
+            return ipcRenderer.invoke("lojaMusica:musica:deletarMultiplas", ids);
+        },
+        editar: (id, dados) => ipcRenderer.invoke("lojaMusica:musica:editar", id, dados),
+        buscar: (id) => ipcRenderer.invoke("lojaMusica:musica:buscar", id),
+        buscarInterpretes: (musicaId) => ipcRenderer.invoke("lojaMusica:musica:buscarInterpretes", musicaId),
+        buscarCompositores: (musicaId) => ipcRenderer.invoke("lojaMusica:musica:buscarCompositores", musicaId)
+    },
+
+    disco: {
+        criar: (dados) => ipcRenderer.invoke("lojaMusica:disco:criar", dados),
+        listar: () => ipcRenderer.invoke("lojaMusica:disco:listar"),
+        editar: (id, dados) => ipcRenderer.invoke("lojaMusica:disco:editar", id, dados),
+        deletar: (id, force = false) => {
+            console.log('>>> [PRELOAD] Enviando requisição para deletar disco:', { id, force });
+            return ipcRenderer.invoke("lojaMusica:disco:deletar", id, force);
+        },
+        buscar: (id) => ipcRenderer.invoke("lojaMusica:disco:buscar", id),
+        buscarPorNome: (nome) => ipcRenderer.invoke("lojaMusica:disco:buscarPorNome", nome),
+        buscarPorNomeEInterpretes: (nome, interpreteIds) => ipcRenderer.invoke("lojaMusica:disco:buscarPorNomeEInterpretes", nome, interpreteIds),
+        buscarDetalhesCompletos: (discoId) => ipcRenderer.invoke("lojaMusica:disco:buscarDetalhesCompletos", discoId),
+        getInterpretes: (discoId) => ipcRenderer.invoke("lojaMusica:disco:getInterpretes", discoId),
+        getInterpretePrincipal: (discoId) => ipcRenderer.invoke("lojaMusica:disco:getInterpretePrincipal", discoId),
+        musicas: {
+            listar: (disco_id) => ipcRenderer.invoke("lojaMusica:disco:musicas:listar", disco_id),
+            adicionar: (disco_id, musica_id, ordem) => ipcRenderer.invoke("lojaMusica:disco:musicas:adicionar", disco_id, musica_id, ordem),
+            remover: (disco_id, musica_id) => ipcRenderer.invoke("lojaMusica:disco:musicas:remover", disco_id, musica_id),
+            verificar: (disco_id, musica_id) => ipcRenderer.invoke("lojaMusica:disco:musicas:verificar", disco_id, musica_id)
+        }
+    },
+
+    busca: {
+        global: (termo) => ipcRenderer.invoke('lojaMusica:busca:global', termo),
+        artistasComPapeis: () => ipcRenderer.invoke('lojaMusica:busca:artistasComPapeis'),
+        artistasFiltrados: (filtros) => ipcRenderer.invoke('lojaMusica:busca:artistasFiltrados', filtros),
+        discosCompletos: (filtros) => ipcRenderer.invoke('lojaMusica:busca:discosCompletos', filtros),
+        musicasComDetalhes: (filtros) => ipcRenderer.invoke('lojaMusica:busca:musicasComDetalhes', filtros),
+    }
+});

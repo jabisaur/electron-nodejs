@@ -1,0 +1,236 @@
+:root {
+    --primary-orange: #e7781e;
+    --primary-dark: #060636;
+    --orange-light: #bd5e0f;
+    --dark-light: #04042e;
+    --bg-gradient: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-orange) 100%);
+}
+
+.versoes-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.versoes-card {
+    background: white;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(6, 6, 54, 0.3);
+    border: 1px solid rgba(231, 120, 30, 0.2);
+    transition: all 0.3s ease;
+}
+
+.versoes-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(231, 120, 30, 0.3);
+}
+
+.versoes-header {
+    background: var(--bg-gradient);
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.versoes-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: rotate 15s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.versoes-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 300;
+    position: relative;
+    z-index: 1;
+    color: white;
+}
+
+.versoes-header h1 i {
+    margin-right: 10px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.versoes-header p {
+    margin: 10px 0 0;
+    font-size: 1.1rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.versoes-body {
+    padding: 30px;
+    background: #f8f9fa;
+}
+
+.versoes-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.versao-item {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(231, 120, 30, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    animation: slideIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+.versao-item:nth-child(1) { animation-delay: 0.1s; }
+.versao-item:nth-child(2) { animation-delay: 0.2s; }
+.versao-item:nth-child(3) { animation-delay: 0.3s; }
+
+.versao-item:hover {
+    transform: translateX(10px);
+    border-color: var(--primary-orange);
+    box-shadow: 0 8px 25px rgba(231, 120, 30, 0.15);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.versao-icone {
+    width: 70px;
+    height: 70px;
+    background: var(--bg-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.2rem;
+    box-shadow: 0 5px 15px rgba(231, 120, 30, 0.3);
+    transition: all 0.3s ease;
+}
+
+.versao-item:hover .versao-icone {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.versao-info {
+    flex: 1;
+}
+
+.versao-nome {
+    font-size: 1.2rem;
+    color: var(--primary-dark);
+    margin-bottom: 5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.versao-nome small {
+    font-size: 0.8rem;
+    color: #999;
+    font-weight: normal;
+}
+
+.versao-valor {
+    font-size: 2rem;
+    font-weight: bold;
+    background: var(--bg-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.versao-tag {
+    background: var(--bg-gradient);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 3px 8px rgba(231, 120, 30, 0.2);
+}
+
+.versoes-footer {
+    background: white;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid rgba(231, 120, 30, 0.1);
+}
+
+.versoes-footer p {
+    margin: 0;
+    color: var(--primary-dark);
+    font-size: 0.95rem;
+}
+
+.versoes-footer i {
+    color: var(--primary-orange);
+    margin: 0 5px;
+}
+
+/* Responsividade */
+@media (max-width: 576px) {
+    .versoes-header h1 {
+        font-size: 2rem;
+    }
+    
+    .versoes-body {
+        padding: 20px;
+    }
+    
+    .versao-item {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+    
+    .versao-item:hover {
+        transform: translateY(-5px);
+    }
+    
+    .versao-info {
+        text-align: center;
+    }
+    
+    .versao-nome {
+        justify-content: center;
+    }
+    
+    .versao-icone {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8rem;
+    }
+    
+    .versao-valor {
+        font-size: 1.5rem;
+    }
+}

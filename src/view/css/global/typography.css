@@ -1,0 +1,33 @@
+h1, h2, h3, h4, h6 {
+    color: var(--primary-dark);
+}
+
+h1 {
+    border-bottom: 2px solid var(--primary-orange);
+    padding-bottom: 10px;
+    font-weight: 300;
+}
+
+h1 i, h2 i {
+    color: var(--primary-orange);
+    margin-right: 8px;
+}
+
+.page-title {
+    color: var(--primary-dark);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.text-primary {
+    color: var(--primary-orange) !important;
+}
+
+.text-dark {
+    color: var(--primary-dark) !important;
+}

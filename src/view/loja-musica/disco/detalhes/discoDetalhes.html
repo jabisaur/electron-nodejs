@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Disco | Empire Records</title>
+    <link rel="stylesheet" href="../../../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../css/base.css">
+    <link rel="stylesheet" href="../../../css/pages/discoDetalhes.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="../../index.html">
+                    <i class="bi bi-disc"></i> Empire Records
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../../index.html">
+                                <i class="bi bi-house-door"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../../cadastro/cadastro.html">
+                                <i class="bi bi-plus-circle"></i> Cadastro
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../../buscar/buscar.html">
+                                <i class="bi bi-search"></i> Busca
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="../../artista/artistaListar.html">
+                                <i class="bi bi-people"></i> Lista de Artistas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mt-4">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="../../index.html"><i class="bi bi-house-door"></i> Home</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="../../cadastro/cadastro.html">Cadastro</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="../disco.html">Discos</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <i class="bi bi-info-circle"></i> Detalhes do Disco
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Carregando detalhes do disco...</p>
+        </div>
+
+        <!-- Conteúdo principal (inicialmente oculto) -->
+        <div id="conteudoDisco" style="display: none;">
+            <!-- Cabeçalho com capa e informações básicas -->
+            <div class="row mb-4">
+                <div class="col-md-3 text-center">
+                    <div id="capaContainer">
+                        <img id="capaDisco" src="" alt="Capa do disco" class="capa-disco img-fluid">
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <h1 id="nomeDisco" class="mb-3"></h1>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h5><i class="bi bi-calendar"></i> Data de Lançamento</h5>
+                                <p id="dataLancamento" class="h4"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h5><i class="bi bi-building"></i> Gravadora</h5>
+                                <p id="gravadora" class="h4"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h5><i class="bi bi-mic"></i> Artista Principal</h5>
+                                <p id="artistaPrincipal" class="h4"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h5><i class="bi bi-music-note-beamed"></i> Estatísticas</h5>
+                                <p id="estatisticas" class="h4"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Artistas participantes -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="bi bi-people"></i> Intérpretes no Disco</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="interpretesLista" class="row">
+                                <!-- Será preenchido via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0"><i class="bi bi-pencil"></i> Compositores no Disco</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="compositoresLista" class="row">
+                                <!-- Será preenchido via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Faixas do disco -->
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-list-ol"></i> Faixas do Disco</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Música</th>
+                                    <th>Duração</th>
+                                    <th>Estilo</th>
+                                    <th>Intérpretes</th>
+                                    <th>Compositores</th>
+                                </tr>
+                            </thead>
+                            <tbody id="faixasLista">
+                                <!-- Será preenchido via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Resumo -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="alert alert-info">
+                                <strong>Total de faixas:</strong> <span id="totalFaixas">0</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-success">
+                                <strong>Duração total:</strong> <span id="duracaoTotal">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botão voltar -->
+        <div class="text-center mt-4 mb-4">
+            <a href="../disco.html" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Voltar para Discos
+            </a>
+        </div>
+    </main>
+
+    <script src="../../../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="rendererDiscoDetalhes.js"></script>
+</body>
+</html>

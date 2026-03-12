@@ -1,0 +1,90 @@
+# Dependências
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Banco de dados SQLite (arquivos binários)
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+database/*.db
+database/*.sqlite
+# Mas NÃO ignore os scripts de criação do banco
+!database/connection.js
+!database/db.js
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# Ambiente e configurações locais
+.env
+.env.local
+.env.*.local
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build e distribuição
+dist/
+out/
+release/
+build/
+*.exe
+*.dmg
+*.deb
+*.AppImage
+*.snap
+*.dll
+*.so
+*.dylib
+
+# Arquivos temporários
+tmp/
+temp/
+*.tmp
+*.temp
+*.cache
+*.log
+
+# Relatórios de teste
+coverage/
+.nyc_output/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+*.lnk
+
+# Configurações do Electron Builder
+electron-builder.yml
+electron-builder.json
+dist_electron/
+release/
+
+# Arquivos de documentação gerados (se houver)
+/docs/generated/
+
+# Cache do npm
+.npm
+
+# Configurações de editores
+.vscode/
+.idea/
+*.sublime-*
+.project
+.classpath

@@ -1,0 +1,25 @@
+.badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.badge.bg-primary {
+    background: var(--primary-orange) !important;
+    color: var(--white);
+}
+
+.badge.bg-success {
+    background: #28a745 !important;
+    color: var(--white);
+}
+
+.badge.bg-danger {
+    background: #dc3545 !important;
+    color: var(--white);
+}
+
+.badge.bg-info {
+    background: #17a2b8 !important;
+    color: var(--white);
+}

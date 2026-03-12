@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/pages/calculadora.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="../loja-musica/index.html">
+                    <i class="bi bi-disc"></i> Empire Records
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">
+                                <i class="bi bi-house-door"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../versao/versoes.html"><i class="bi bi-info-circle"></i>
+                                Versões</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../contador/contador.html"><i class="bi bi-123"></i> Contador</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="./calculadora.html"><i class="bi bi-calculator"></i>
+                                Calculadora</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <main class="container">
+        <h1 class="page-title">
+            <i class="bi bi-calculator"></i> Calculadora
+        </h1>
+
+        <div class="calculadora-container">
+            <div class="calculadora-card">
+                <div class="calculadora-display">
+                    <div id="display">0</div>
+                </div>
+                
+                <div class="calculadora-botoes">
+                    <!-- Linha 1 -->
+                    <button class="btn-calc btn-limpar" onclick="limparDisplay()" title="Limpar (C)">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                    <button class="btn-calc btn-operacao" onclick="definirOperador('/')" title="Dividir (/)">÷</button>
+                    <button class="btn-calc btn-operacao" onclick="definirOperador('*')" title="Multiplicar (*)">×</button>
+                    <button class="btn-calc btn-operacao" onclick="definirOperador('-')" title="Subtrair (-)">−</button>
+                    
+                    <!-- Linha 2 -->
+                    <button class="btn-calc btn-numero" onclick="adicionarNumero('7')" title="7">7</button>
+                    <button class="btn-calc btn-numero" onclick="adicionarNumero('8')" title="8">8</button>
+                    <button class="btn-calc btn-numero" onclick="adicionarNumero('9')" title="9">9</button>
+                    <button class="btn-calc btn-operacao" onclick="definirOperador('+')" title="Adicionar (+)">+</button>
+                    
+                    <!-- Linha 3 -->
+                    <button class="btn-calc btn-numero" onclick="adicionarNumero('4')" title="4">4</button>
+                    <button class="btn-calc btn-numero" onclick="adicionarNumero('5')" title="5">5</button>
+                    <button class="btn-calc btn-numero" onclick="adicionarNumero('6')" title="6">6</button>
+                    <button class="btn-calc btn-operacao" onclick="definirOperador('%')" title="Porcentagem (%)">%</button>
+                    
+                    <!-- Linha 4 -->
+                    <button class="btn-calc btn-numero" onclick="adicionarNumero('1')" title="1">1</button>
+                    <button class="btn-calc btn-numero" onclick="adicionarNumero('2')" title="2">2</button>
+                    <button class="btn-calc btn-numero" onclick="adicionarNumero('3')" title="3">3</button>
+                    <button class="btn-calc btn-operacao" onclick="definirOperador('mod')" title="Resto da divisão (mod)">mod</button>
+                    
+                    <!-- Linha 5 -->
+                    <button class="btn-calc btn-numero btn-zero" onclick="adicionarNumero('0')" title="0">0</button>
+                    <button class="btn-calc btn-numero" onclick="adicionarDecimal()" title="Ponto decimal">,</button>
+                    <button class="btn-calc btn-igual" onclick="calcular()" title="Calcular (=)">=</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Histórico -->
+        <div class="historico-container">
+            <div class="historico-card">
+                <div class="historico-header">
+                    <i class="bi bi-clock-history"></i> Histórico de Cálculos
+                </div>
+                <div class="historico-body" id="historico">
+                    <div class="historico-vazio">Nenhum cálculo ainda</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <p>Juliana Gabinio © 2026 - Todos os direitos reservados</p>
+    </footer>
+    
+    <script src="rendererCalculadora.js"></script>
+</body>
+</html>

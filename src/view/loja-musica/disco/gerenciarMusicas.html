@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Músicas do Disco | Empire Records</title>
+    <link rel="stylesheet" href="../../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/pages/gerenciarMusicas.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="../index.html">
+                    <i class="bi bi-disc"></i> Empire Records
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">
+                                <i class="bi bi-house-door"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../cadastro/cadastro.html">
+                                <i class="bi bi-plus-circle"></i> Cadastro
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../buscar/buscar.html">
+                                <i class="bi bi-search"></i> Busca
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="../artista/artistaListar.html">
+                                <i class="bi bi-people"></i> Lista de Artistas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mt-4">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="../index.html"><i class="bi bi-house-door"></i> Home</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="../cadastro/cadastro.html">Cadastro</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="./disco.html">Discos</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <i class="bi bi-music-note"></i> Gerenciar Músicas
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="text-center my-5" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Carregando...</p>
+        </div>
+
+        <!-- Conteúdo principal -->
+        <div id="conteudoPrincipal">
+            <!-- Cabeçalho do disco -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0" id="tituloDisco">Gerenciar Músicas do Disco</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2 text-center">
+                            <div id="capaDiscoContainer">
+                                <img id="capaDisco" src="" alt="Capa do disco">
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <h3 id="nomeDisco"></h3>
+                            <p id="infoDisco" class="text-muted"></p>
+                            <div class="mt-2">
+                                <span class="badge bg-info me-2" id="totalMusicas">0 músicas</span>
+                                <span class="badge bg-success" id="duracaoTotal">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário para adicionar música -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h3 class="h5 mb-0"><i class="bi bi-plus-circle"></i> Adicionar Música ao Disco</h3>
+                </div>
+                <div class="card-body">
+                    <form id="formAdicionarMusica" class="row g-3">
+                        <div class="col-md-7">
+                            <label for="selectMusica" class="form-label">Selecione a Música</label>
+                            <select class="form-control" id="selectMusica" required>
+                                <option value="">Carregando músicas...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="ordemMusica" class="form-label">Ordem no Disco</label>
+                            <input type="number" class="form-control" id="ordemMusica" min="1" placeholder="Nº da faixa" required>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success w-100 btn-adicionar">
+                                <i class="bi bi-plus"></i> Adicionar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lista de músicas do disco -->
+            <div class="card">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h3 class="h5 mb-0"><i class="bi bi-list-ol"></i> Músicas do Disco</h3>
+                    <small id="ordemInstrucao" class="text-muted">Arraste as músicas para reordenar</small>
+                </div>
+                <div class="card-body">
+                    <div id="listaMusicasContainer">
+                        <div id="musicasLista" class="list-group">
+                            <!-- Músicas serão carregadas aqui -->
+                        </div>
+                    </div>
+                    
+                    <div id="semMusicas" class="text-center p-4" style="display: none;">
+                        <i class="bi bi-music-note fs-1 text-muted"></i>
+                        <p class="mt-2">Nenhuma música adicionada a este disco ainda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botões de ação -->
+        <div class="text-center mt-4 mb-4">
+            <a href="disco.html" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar para Discos
+            </a>
+            <button class="btn btn-primary" id="btnSalvarOrdem" style="display: none;">
+                <i class="bi bi-save"></i> Salvar Nova Ordem
+            </button>
+        </div>
+    </main>
+
+    <!-- Modal de confirmação para remover música -->
+    <div id="confirmarRemoverModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Confirmar Remoção</h3>
+                <button class="close-btn" onclick="fecharModalRemover()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="mensagemRemover">Tem certeza que deseja remover esta música do disco?</p>
+                <p class="text-muted" id="musicaRemoverInfo"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharModalRemover()">Cancelar</button>
+                <button class="btn btn-danger" id="confirmarRemoverBtn">Remover</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="rendererGerenciarMusicas.js"></script>
+</body>
+</html>

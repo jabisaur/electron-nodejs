@@ -1,0 +1,107 @@
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    border-radius: 8px;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+}
+
+.loading-spinner-small {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(231, 120, 30, 0.3);
+    border-top: 3px solid var(--primary-orange);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+.loading-spinner-large {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(231, 120, 30, 0.3);
+    border-top: 4px solid var(--primary-orange);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.loading-text {
+    color: var(--primary-dark);
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+.loading-text i {
+    color: var(--primary-orange);
+    margin: 0 5px;
+}
+
+/* Loading inline */
+.loading-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-dark);
+}
+
+.loading-inline .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(231, 120, 30, 0.3);
+    border-top: 2px solid var(--primary-orange);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Loading página inteira */
+.loading-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-page .loading-content {
+    text-align: center;
+}
+
+.loading-page h3 {
+    color: var(--primary-dark);
+    margin-top: 20px;
+}
+
+.loading-page p {
+    color: #6c757d;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Spinner do Bootstrap customizado */
+.spinner-border {
+    color: var(--primary-orange) !important;
+}
+
+.spinner-grow {
+    color: var(--primary-orange) !important;
+}

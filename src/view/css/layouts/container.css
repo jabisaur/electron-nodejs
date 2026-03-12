@@ -1,0 +1,43 @@
+.container {
+    max-width: 1400px !important;
+    margin: 0 auto;
+    background: var(--white);
+    padding: 25px 30px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Container para páginas específicas que precisam de largura menor */
+.container-sm {
+    max-width: 800px !important;
+    margin: 0 auto;
+    background: var(--white);
+    padding: 25px 30px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-lg);
+}
+
+.container-lg {
+    max-width: 1600px !important;
+    margin: 0 auto;
+    background: var(--white);
+    padding: 25px 30px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Container sem fundo branco (para casos especiais) */
+.container-transparent {
+    max-width: 1400px !important;
+    margin: 0 auto;
+    padding: 25px 30px;
+}
+
+@media (max-width: 768px) {
+    .container,
+    .container-sm,
+    .container-lg,
+    .container-transparent {
+        padding: 15px;
+    }
+}

@@ -1,0 +1,37 @@
+.card {
+    background: var(--white);
+    border: 1px solid #dee2e6;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-orange);
+}
+
+.card-header {
+    background: var(--primary-dark) !important;
+    color: var(--white) !important;
+    border-bottom: 2px solid var(--primary-orange) !important;
+    padding: 15px 20px;
+    font-weight: 600;
+}
+
+.card-header.bg-primary,
+.card-header.bg-success,
+.card-header.bg-info,
+.card-header.bg-warning,
+.card-header.bg-danger {
+    background: var(--bg-gradient) !important;
+    border-bottom: 2px solid var(--white) !important;
+}
+
+.card-body {
+    background: var(--white);
+    color: #333;
+    padding: 20px;
+}

@@ -1,0 +1,131 @@
+/* ===== FILTROS ===== */
+.filtros-container {
+    background: var(--white);
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.filtro-label {
+    color: var(--primary-dark);
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.filtro-label i {
+    color: var(--primary-orange);
+    margin-right: 5px;
+}
+
+.filtro-input {
+    background: var(--white);
+    border: 2px solid #dee2e6;
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 8px;
+    width: 100%;
+    transition: var(--transition);
+}
+
+.filtro-input:focus {
+    border-color: var(--primary-orange);
+    box-shadow: 0 0 0 3px rgba(231, 120, 30, 0.2);
+    outline: none;
+}
+
+.filtro-input:hover {
+    border-color: var(--primary-orange);
+}
+
+/* Botões de filtro */
+.btn-filtrar {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-orange) 100%);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: var(--transition);
+    width: 100%;
+}
+
+.btn-filtrar:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-limpar-filtros {
+    background: #6c757d;
+    color: var(--white);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.btn-limpar-filtros:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+/* Filtros em linha */
+.filtros-row {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filtros-row .filtro-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Filtros ativos */
+.filtros-ativos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.filtro-tag {
+    background: #e9ecef;
+    color: var(--primary-dark);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.filtro-tag i {
+    color: var(--primary-orange);
+    cursor: pointer;
+}
+
+.filtro-tag i:hover {
+    color: var(--primary-dark);
+}
+
+@media (max-width: 768px) {
+    .filtros-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .filtros-row .filtro-group {
+        width: 100%;
+    }
+    
+    .btn-filtrar {
+        margin-top: 10px;
+    }
+}

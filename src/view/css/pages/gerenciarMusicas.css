@@ -1,0 +1,132 @@
+/* gerenciarMusicas.css */
+
+.musica-item {
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+}
+
+.musica-item:hover {
+    background-color: #f8f9fa;
+    border-left-color: #e7781e;
+}
+
+.musica-item.edit-mode {
+    background-color: #fff3e0;
+    border-left-color: #ffc107;
+}
+
+.ordem-badge {
+    background-color: #e7781e;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+    min-width: 40px;
+    text-align: center;
+    display: inline-block;
+}
+
+.ordem-input {
+    width: 70px;
+    text-align: center;
+    border: 2px solid #e7781e;
+    border-radius: 20px;
+    padding: 5px;
+    font-weight: bold;
+}
+
+.participacao-info {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.btn-adicionar {
+    background: linear-gradient(135deg, #060636, #e7781e);
+    color: white;
+    border: none;
+}
+
+.btn-adicionar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(231, 120, 30, 0.3);
+}
+
+.card-header.bg-primary {
+    background: linear-gradient(135deg, #060636, #e7781e) !important;
+}
+
+.draggable {
+    cursor: move;
+}
+
+.draggable.dragging {
+    opacity: 0.5;
+}
+
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: #e9ecef;
+}
+
+#capaDisco {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+#totalMusicas.badge,
+#duracaoTotal.badge {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+}
+
+.list-group-item {
+    border-left: 3px solid transparent;
+}
+
+.list-group-item:hover {
+    border-left-color: #e7781e;
+    background-color: #f8f9fa;
+}
+
+.acao-botoes {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-editar-ordem {
+    background-color: #ffc107;
+    color: #212529;
+    border: none;
+}
+
+.btn-editar-ordem:hover {
+    background-color: #e0a800;
+}
+
+.btn-salvar-ordem {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn-salvar-ordem:hover {
+    background-color: #218838;
+}
+
+.btn-cancelar-edicao {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+}
+
+.btn-cancelar-edicao:hover {
+    background-color: #5a6268;
+}
+
+.modo-edicao-ativo {
+    background-color: #fff3cd !important;
+    border-left: 3px solid #ffc107 !important;
+}

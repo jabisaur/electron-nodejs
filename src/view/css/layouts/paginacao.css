@@ -1,0 +1,100 @@
+.paginacao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.paginacao-info {
+    background: var(--primary-dark);
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: var(--white);
+    font-weight: 500;
+    min-width: 150px;
+    text-align: center;
+}
+
+.btn-pagina {
+    background: var(--white);
+    border: 2px solid var(--primary-orange);
+    color: var(--primary-dark);
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: var(--transition);
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-pagina i {
+    font-size: 1rem;
+}
+
+.btn-pagina:hover:not(:disabled) {
+    background: var(--primary-orange);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-pagina:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #dee2e6;
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+/* Paginação compacta para mobile */
+.paginacao-compacta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-top: 15px;
+}
+
+.paginacao-compacta .btn-pagina {
+    padding: 5px 10px;
+    min-width: 40px;
+    justify-content: center;
+}
+
+.paginacao-compacta .paginacao-info {
+    padding: 5px 12px;
+    font-size: 0.9rem;
+    min-width: auto;
+}
+
+/* Resultados */
+.resumo-resultados {
+    background: #e9ecef;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: var(--primary-dark);
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+@media (max-width: 576px) {
+    .paginacao {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .btn-pagina {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .paginacao-info {
+        width: 100%;
+    }
+}

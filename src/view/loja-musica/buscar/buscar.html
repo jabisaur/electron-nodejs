@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar | Empire Records</title>
+    <link rel="stylesheet" href="../../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../css/base.css">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="../index.html">
+                    <i class="bi bi-disc"></i> Empire Records
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">
+                                <i class="bi bi-house-door"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../cadastro/cadastro.html">
+                                <i class="bi bi-plus-circle"></i> Cadastro
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="./buscar.html">
+                                <i class="bi bi-search"></i> Busca
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="../artista/artistaListar.html">
+                                <i class="bi bi-people"></i> Lista de Artistas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mt-4">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="../index.html"><i class="bi bi-house-door"></i> Home</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="../index.html">Loja de Música</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <i class="bi bi-search"></i> Buscar
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <h1 class="page-title">
+            <i class="bi bi-search"></i> Buscar no Empire Records
+        </h1>
+
+        <!-- Formulário de busca -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-funnel"></i> Filtros de Busca
+            </div>
+            <div class="card-body">
+                <form id="form-busca">
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="termoBusca" class="form-label">
+                                <i class="bi bi-pencil"></i> Digite o termo de busca:
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" id="termoBusca"
+                                    placeholder="Ex: Rock, Beatles, Sony..." autofocus>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="tipoBusca" class="form-label">
+                                <i class="bi bi-filter"></i> Buscar em:
+                            </label>
+                            <select class="form-select" id="tipoBusca">
+                                <option value="todos"><i class="bi bi-files"></i> Todos os tipos</option>
+                                <option value="artistas"><i class="bi bi-people"></i> Artistas</option>
+                                <option value="discos"><i class="bi bi-disc"></i> Discos</option>
+                                <option value="musicas"><i class="bi bi-music-note"></i> Músicas</option>
+                                <option value="estilos"><i class="bi bi-music-note-beamed"></i> Estilos</option>
+                                <option value="gravadoras"><i class="bi bi-building"></i> Gravadoras</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary" onclick="limparBusca()">
+                        <i class="bi bi-eraser"></i> Limpar
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Resultados da busca -->
+        <div id="resultadosBusca">
+            <div id="loadingResultados" style="display: none;" class="text-center my-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Buscando...</span>
+                </div>
+                <p class="mt-2"><i class="bi bi-hourglass-split"></i> Buscando resultados...</p>
+            </div>
+
+            <!-- Artistas -->
+            <div id="resultadosArtistas" style="display: none;">
+                <div class="card mb-4">
+                    <div class="card-header"
+                        style="background: #28a745 !important; color: white !important; border-bottom: 2px solid var(--white) !important;">
+                        <i class="bi bi-people"></i> Artistas Encontrados
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th><i class="bi bi-person"></i> Nome</th>
+                                        <th><i class="bi bi-gear"></i> Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyArtistas">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">
+                                            <i class="bi bi-info-circle"></i> Nenhum artista encontrado
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discos -->
+            <div id="resultadosDiscos" style="display: none;">
+                <div class="card mb-4">
+                    <div class="card-header"
+                        style="background: #dc3545 !important; color: white !important; border-bottom: 2px solid var(--white) !important;">
+                        <i class="bi bi-disc"></i> Discos Encontrados
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th><i class="bi bi-image"></i> Capa</th>
+                                        <th><i class="bi bi-tag"></i> Nome</th>
+                                        <th><i class="bi bi-calendar"></i> Lançamento</th>
+                                        <th><i class="bi bi-building"></i> Gravadora</th>
+                                        <th><i class="bi bi-gear"></i> Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyDiscos">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">
+                                            <i class="bi bi-info-circle"></i> Nenhum disco encontrado
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Músicas -->
+            <div id="resultadosMusicas" style="display: none;">
+                <div class="card mb-4">
+                    <div class="card-header"
+                        style="background: var(--primary-orange) !important; color: white !important; border-bottom: 2px solid var(--white) !important;">
+                        <i class="bi bi-music-note"></i> Músicas Encontradas
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th><i class="bi bi-music-note"></i> Nome</th>
+                                        <th><i class="bi bi-clock"></i> Duração</th>
+                                        <th><i class="bi bi-calendar"></i> Lançamento</th>
+                                        <th><i class="bi bi-music-note-beamed"></i> Estilo</th>
+                                        <th><i class="bi bi-people"></i> Intérpretes</th>
+                                        <th><i class="bi bi-gear"></i> Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyMusicas">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">
+                                            <i class="bi bi-info-circle"></i> Nenhuma música encontrada
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estilos -->
+            <div id="resultadosEstilos" style="display: none;">
+                <div class="card mb-4">
+                    <div class="card-header"
+                        style="background: #ffc107 !important; color: #212529 !important; border-bottom: 2px solid var(--white) !important;">
+                        <i class="bi bi-music-note-beamed"></i> Estilos Encontrados
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th><i class="bi bi-tag"></i> Descrição</th>
+                                        <th><i class="bi bi-gear"></i> Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyEstilos">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">
+                                            <i class="bi bi-info-circle"></i> Nenhum estilo encontrado
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gravadoras -->
+            <div id="resultadosGravadoras" style="display: none;">
+                <div class="card mb-4">
+                    <div class="card-header"
+                        style="background: #6c757d !important; color: white !important; border-bottom: 2px solid var(--white) !important;">
+                        <i class="bi bi-building"></i> Gravadoras Encontradas
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th><i class="bi bi-building"></i> Nome</th>
+                                        <th><i class="bi bi-gear"></i> Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyGravadoras">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">
+                                            <i class="bi bi-info-circle"></i> Nenhuma gravadora encontrada
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sem resultados -->
+            <div id="semResultados" style="display: none;" class="alert alert-info text-center">
+                <i class="bi bi-info-circle" style="font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+                <h4><i class="bi bi-exclamation-triangle"></i> Nenhum resultado encontrado</h4>
+                <p><i class="bi bi-pencil"></i> Tente usar termos diferentes ou verificar a ortografia.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <p>
+            <i class="bi bi-c-circle"></i> Juliana Gabinio - Sistema Desktop com Electron
+            <i class="bi bi-c-circle"></i>
+        </p>
+    </footer>
+
+    <script src="../../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="rendererBusca.js"></script>
+</body>
+
+</html>
