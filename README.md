@@ -84,7 +84,7 @@ O sistema utiliza o motor **SQLite3** pela sua eficiência em aplicações locai
 
 1. **Clonar e Instalar Dependências:**
    ```bash
-   git clone [https://github.com/seu-usuario/empire-records.git](https://github.com/seu-usuario/empire-records.git)
+   git clone [https://github.com/jabisaur/electron-nodejs.git]
    cd empire-records
    npm install
 
