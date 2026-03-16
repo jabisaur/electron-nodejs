@@ -36,28 +36,73 @@ const criar = (dados) => {
     });
 };
 
-const listar = () => {
-    console.log('>>> lojaMusica:disco:listar')
+const listar = (pagina = 1, itensPorPagina = 10, filtros = {}) => {
+    const offset = (pagina - 1) * itensPorPagina;
+    const params = [];
+    
+    let sql = `
+        SELECT d.*, g.nome as gravadora_nome
+        FROM disco d
+        LEFT JOIN gravadora g ON d.gravadora_id = g.gravadora_id
+        WHERE 1=1
+    `;
+
+    if (filtros.nome) {
+        sql += ` AND d.nome LIKE ?`;
+        params.push(`%${filtros.nome}%`);
+    }
+    if (filtros.gravadora_id) {
+        sql += ` AND d.gravadora_id = ?`;
+        params.push(filtros.gravadora_id);
+    }
+    if (filtros.ano) {
+        sql += ` AND strftime('%Y', d.data_lancamento) = ?`;
+        params.push(filtros.ano.toString());
+    }
+
+    sql += ` ORDER BY d.nome LIMIT ? OFFSET ?`;
+    params.push(itensPorPagina, offset);
 
     return new Promise((resolve, reject) => {
-        db.all(
-            `SELECT d.*, g.nome as gravadora_nome
-             FROM disco d
-             LEFT JOIN gravadora g ON d.gravadora_id = g.gravadora_id
-             ORDER BY d.nome`,
-            [],
-            (erro, discos) => {
-                if (erro) {
-                    console.error('Erro ao listar discos:', erro)
-                    reject(erro)
-                    return
-                }
+        db.all(sql, params, (erro, discos) => {
+            if (erro) reject(erro);
+            else resolve(discos);
+        });
+    });
+};
 
-                console.log(`${discos.length} discos encontrados.`)
-                resolve(discos)
-            }
-        )
-    })
+const contarTotal = (filtros = {}) => {
+    let sql = `SELECT COUNT(*) as total FROM disco d WHERE 1=1`;
+    const params = [];
+
+    if (filtros.nome) {
+        sql += ` AND d.nome LIKE ?`;
+        params.push(`%${filtros.nome}%`);
+    }
+    if (filtros.gravadora_id) {
+        sql += ` AND d.gravadora_id = ?`;
+        params.push(filtros.gravadora_id);
+    }
+    if (filtros.ano) {
+        sql += ` AND strftime('%Y', d.data_lancamento) = ?`;
+        params.push(filtros.ano.toString());
+    }
+
+    return new Promise((resolve, reject) => {
+        db.get(sql, params, (erro, row) => {
+            if (erro) reject(erro);
+            else resolve(row ? row.total : 0);
+        });
+    });
+};
+
+const listarAnos = () => {
+    return new Promise((resolve, reject) => {
+        db.all(`SELECT DISTINCT strftime('%Y', data_lancamento) as ano FROM disco WHERE data_lancamento IS NOT NULL ORDER BY ano DESC`, [], (erro, anos) => {
+            if (erro) reject(erro);
+            else resolve(anos.map(a => a.ano));
+        });
+    });
 };
 
 const buscar = (id) => {
@@ -531,6 +576,8 @@ const musicas = {
 module.exports = {
     criar,
     listar,
+    contarTotal,
+    listarAnos,
     editar,
     deletar,
     buscar,

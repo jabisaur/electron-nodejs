@@ -3,27 +3,33 @@ import { carregarGravadorasNoSelectEdicao, carregarInterpretesNoSelectEdicao } f
 import { formatarData, escaparAspas } from './utils.js';
 import { abrirModalEdicao, fecharModalEdicao } from './modal.js';
 
-let todosDiscos = [];
-let discosFiltrados = [];
+let discosDaPagina = [];
 let paginaAtual = 1;
-let itensPorPagina = 10;
-let filtroNome = '';
-let filtroGravadoraId = '';
-let filtroAno = '';
-
+const itensPorPagina = 10;
+let totalDiscosNoBanco = 0;
 
 let filtroNomeInput, filtroGravadoraSelect, filtroAnoSelect, loadingOverlay;
 let totalDiscosSpan, paginacaoInfoSpan, resumoResultadosSpan;
 let btnAnterior, btnProxima;
 
 export async function carregarDiscos() {
+    inicializarElementosDOM();
     mostrarLoading(true);
     
     try {
         console.log('Carregando discos...');
-        todosDiscos = await window.lojaMusica.disco.listar();
         
-        for (let disco of todosDiscos) {
+        const filtros = {
+            nome: filtroNomeInput ? filtroNomeInput.value.trim() : '',
+            gravadora_id: filtroGravadoraSelect ? filtroGravadoraSelect.value : '',
+            ano: filtroAnoSelect ? filtroAnoSelect.value : ''
+        };
+
+        discosDaPagina = await window.lojaMusica.disco.listar(paginaAtual, itensPorPagina, filtros);
+
+        totalDiscosNoBanco = await window.lojaMusica.disco.contarTotal(filtros);
+
+        for (let disco of discosDaPagina) {
             const interpretes = await window.lojaMusica.disco.getInterpretes(disco.disco_id);
             disco.interpretes = interpretes || [];
             
@@ -32,44 +38,39 @@ export async function carregarDiscos() {
             disco.interprete_principal_id = interpretePrincipal ? interpretePrincipal.artista_id : null;
         }
         
-        discosFiltrados = [...todosDiscos];
+        if (filtroGravadoraSelect && filtroGravadoraSelect.options.length <= 1) preencherFiltroGravadoras();
+        if (filtroAnoSelect && filtroAnoSelect.options.length <= 1) preencherFiltroAnos();
         
-        inicializarElementosDOM();
-        
-        preencherFiltroGravadoras();
-        
-        preencherFiltroAnos();
-        
-        aplicarFiltros();
+        atualizarTabela();
 
     } catch (erro) {
         console.error('Erro ao carregar discos:', erro);
-        elements.tbodyDiscos.innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align: center; padding: 20px; color: red;">
-                    Erro ao carregar discos: ${erro.message}
-                </td>
-            </tr>`;
-            
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Erro',
-            mensagem: 'Erro ao carregar discos: ' + erro.message
-        });
+        if (elements.tbodyDiscos) {
+            elements.tbodyDiscos.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px; color: red;">
+                        Erro ao carregar discos: ${erro.message}
+                    </td>
+                </tr>`;
+        }
+        window.dialog.exibirDialogMensagem({ titulo: 'Erro', mensagem: 'Erro ao carregar discos: ' + erro.message });
     } finally {
         mostrarLoading(false);
     }
 }
 
 function inicializarElementosDOM() {
-    filtroNomeInput = document.getElementById('filtroNome');
-    filtroGravadoraSelect = document.getElementById('filtroGravadora');
-    filtroAnoSelect = document.getElementById('filtroAno');
-    loadingOverlay = document.getElementById('loadingOverlay');
-    totalDiscosSpan = document.getElementById('totalDiscosCount');
-    paginacaoInfoSpan = document.getElementById('paginacaoInfo');
-    resumoResultadosSpan = document.getElementById('resumoResultados');
-    btnAnterior = document.getElementById('btnAnterior');
-    btnProxima = document.getElementById('btnProxima');
+    if (!filtroNomeInput) {
+        filtroNomeInput = document.getElementById('filtroNome');
+        filtroGravadoraSelect = document.getElementById('filtroGravadora');
+        filtroAnoSelect = document.getElementById('filtroAno');
+        loadingOverlay = document.getElementById('loadingOverlay');
+        totalDiscosSpan = document.getElementById('totalDiscosCount');
+        paginacaoInfoSpan = document.getElementById('paginacaoInfo');
+        resumoResultadosSpan = document.getElementById('resumoResultados');
+        btnAnterior = document.getElementById('btnAnterior');
+        btnProxima = document.getElementById('btnProxima');
+    }
 }
 
 async function preencherFiltroGravadoras() {
@@ -86,51 +87,22 @@ async function preencherFiltroGravadoras() {
     }
 }
 
-function preencherFiltroAnos() {
-    if (!filtroAnoSelect) return;
-    
-    const anos = new Set();
-    todosDiscos.forEach(disco => {
-        if (disco.data_lancamento) {
-            const ano = new Date(disco.data_lancamento).getFullYear();
-            anos.add(ano);
-        }
-    });
-    
-    filtroAnoSelect.innerHTML = '<option value="">Todos os anos</option>';
-    Array.from(anos).sort((a, b) => b - a).forEach(ano => {
-        filtroAnoSelect.innerHTML += `<option value="${ano}">${ano}</option>`;
-    });
+async function preencherFiltroAnos() {
+    try {
+        if (!filtroAnoSelect) return;
+        const anos = await window.lojaMusica.disco.listarAnos();
+        filtroAnoSelect.innerHTML = '<option value="">Todos os anos</option>';
+        anos.forEach(ano => {
+            if (ano) filtroAnoSelect.innerHTML += `<option value="${ano}">${ano}</option>`;
+        });
+    } catch (erro) {
+        console.error('Erro ao carregar anos para filtro:', erro);
+    }
 }
 
 export function aplicarFiltros() {
-    if (!filtroNomeInput || !filtroGravadoraSelect || !filtroAnoSelect) return;
-    
-    filtroNome = filtroNomeInput.value.toLowerCase().trim();
-    filtroGravadoraId = filtroGravadoraSelect.value;
-    filtroAno = filtroAnoSelect.value;
-    
-    discosFiltrados = todosDiscos.filter(disco => {
-        if (filtroNome && !disco.nome.toLowerCase().includes(filtroNome)) {
-            return false;
-        }
-        
-        if (filtroGravadoraId && disco.gravadora_id != filtroGravadoraId) {
-            return false;
-        }
-        
-        if (filtroAno) {
-            const anoDisco = disco.data_lancamento ? new Date(disco.data_lancamento).getFullYear() : null;
-            if (anoDisco != filtroAno) {
-                return false;
-            }
-        }
-        
-        return true;
-    });
-    
     paginaAtual = 1;
-    atualizarTabela();
+    carregarDiscos();
 }
 
 export function limparFiltros() {
@@ -143,39 +115,36 @@ export function limparFiltros() {
 export function paginaAnterior() {
     if (paginaAtual > 1) {
         paginaAtual--;
-        atualizarTabela();
+        carregarDiscos();
     }
 }
 
 export function proximaPagina() {
-    const totalPaginas = Math.ceil(discosFiltrados.length / itensPorPagina);
+    const totalPaginas = Math.ceil(totalDiscosNoBanco / itensPorPagina);
     if (paginaAtual < totalPaginas) {
         paginaAtual++;
-        atualizarTabela();
+        carregarDiscos();
     }
 }
 
 function atualizarTabela() {
-    const totalDiscos = discosFiltrados.length;
-    const totalPaginas = Math.ceil(totalDiscos / itensPorPagina);
-    const inicio = (paginaAtual - 1) * itensPorPagina;
-    const fim = Math.min(inicio + itensPorPagina, totalDiscos);
-    const discosPagina = discosFiltrados.slice(inicio, fim);
-    
-    if (totalDiscosSpan) totalDiscosSpan.textContent = `${totalDiscos} disco(s)`;
+    const totalPaginas = Math.ceil(totalDiscosNoBanco / itensPorPagina);
+    const inicioDisplay = (paginaAtual - 1) * itensPorPagina + 1;
+    const fimDisplay = Math.min(paginaAtual * itensPorPagina, totalDiscosNoBanco);
+
+    if (totalDiscosSpan) totalDiscosSpan.textContent = `${totalDiscosNoBanco} disco(s)`;
     if (paginacaoInfoSpan) paginacaoInfoSpan.textContent = `Página ${paginaAtual} de ${totalPaginas || 1}`;
+    
     if (resumoResultadosSpan) {
-        if (totalDiscos === 0) {
-            resumoResultadosSpan.textContent = `Mostrando 0 de 0 discos`;
-        } else {
-            resumoResultadosSpan.textContent = `Mostrando ${inicio + 1}-${fim} de ${totalDiscos} discos`;
-        }
+        resumoResultadosSpan.textContent = totalDiscosNoBanco === 0 
+            ? `Mostrando 0 de 0 discos` 
+            : `Mostrando ${inicioDisplay}-${fimDisplay} de ${totalDiscosNoBanco} discos`;
     }
     
     if (btnAnterior) btnAnterior.disabled = paginaAtual <= 1;
     if (btnProxima) btnProxima.disabled = paginaAtual >= totalPaginas;
     
-    if (discosPagina.length === 0) {
+    if (discosDaPagina.length === 0) {
         elements.tbodyDiscos.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align: center; padding: 20px; color: #666;">
@@ -186,7 +155,7 @@ function atualizarTabela() {
     }
     
     let html = '';
-    discosPagina.forEach(disco => {
+    discosDaPagina.forEach(disco => {
         const dataFormatada = formatarData(disco.data_lancamento);
         const interpretesInfo = buscarInterpretesInfo(disco);
         const dadosJSON = escaparAspas(JSON.stringify(disco));
@@ -231,8 +200,8 @@ function montarLinhaTabela(disco, dataFormatada, interpretesInfo, dadosJSON) {
             <td>${disco.disco_id}</td>
             <td>
                 ${disco.imagem 
-                    ? `<img src="${disco.imagem}" alt="Capa" class="capa-mini">` 
-                    : '<i class="bi bi-disc fs-1 text-secondary"></i>'}
+                    ? `<img src="${disco.imagem}" alt="Capa" class="capa-mini" style="max-width:50px; border-radius:4px;">` 
+                    : '<i class="bi bi-disc fs-2 text-secondary"></i>'}
             </td>
             <td>
                 <strong>${disco.nome}</strong>
@@ -260,7 +229,7 @@ function montarLinhaTabela(disco, dataFormatada, interpretesInfo, dadosJSON) {
                             title="Gerenciar músicas">
                         <i class="bi bi-music-note"></i>
                     </button>
-                    <button class="btn btn-primary btn-sm" 
+                    <button class="btn btn-warning btn-sm" 
                             onclick='editarDisco(${disco.disco_id}, ${dadosJSON})'
                             title="Editar">
                         <i class="bi bi-pencil"></i>
@@ -317,6 +286,7 @@ export async function editarDisco(id, dados) {
             return;
         }
 
+        mostrarLoading(true);
         console.log('Atualizando disco ID:', id, novosDados);
         const discoAtualizado = await window.lojaMusica.disco.editar(id, {
             nome: novosDados.nome,
@@ -341,36 +311,26 @@ export async function editarDisco(id, dados) {
             titulo: 'Erro',
             mensagem: erro.message || 'Erro ao editar disco.'
         });
+    } finally {
+        mostrarLoading(false);
     }
 }
 
 function validarDadosEdicao(dados) {
     if (!dados.nome) {
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Campo vazio',
-            mensagem: 'O nome do disco não pode ficar vazio.'
-        });
+        window.dialog.exibirDialogMensagem({ titulo: 'Campo vazio', mensagem: 'O nome do disco não pode ficar vazio.' });
         return false;
     }
     if (!dados.data_lancamento) {
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Campo vazio',
-            mensagem: 'A data de lançamento não pode ficar vazia.'
-        });
+        window.dialog.exibirDialogMensagem({ titulo: 'Campo vazio', mensagem: 'A data de lançamento não pode ficar vazia.' });
         return false;
     }
     if (!dados.gravadora_id) {
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Campo vazio',
-            mensagem: 'Selecione uma gravadora.'
-        });
+        window.dialog.exibirDialogMensagem({ titulo: 'Campo vazio', mensagem: 'Selecione uma gravadora.' });
         return false;
     }
     if (!dados.interprete_id) {
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Campo vazio',
-            mensagem: 'Selecione o intérprete principal.'
-        });
+        window.dialog.exibirDialogMensagem({ titulo: 'Campo vazio', mensagem: 'Selecione o intérprete principal.' });
         return false;
     }
     return true;
@@ -385,83 +345,51 @@ function verificarAlteracoes(dadosAntigos, novosDados) {
 }
 
 export async function deletarDisco(id) {
-    console.log('>>> [RENDERER] Iniciando exclusão do disco ID:', id);
-    
     const confirmado = await window.dialog.exibirDialogConfirmacao({
         titulo: 'Confirmar exclusão',
         mensagem: 'Tem certeza que deseja deletar este disco?'
     });
     
-    if (!confirmado) {
-        console.log('>>> [RENDERER] Exclusão cancelada pelo usuário');
-        return;
-    }
+    if (!confirmado) return;
 
+    mostrarLoading(true);
     try {
-        console.log('>>> [RENDERER] Chamando disco.deletar com force=false para ID:', id);
-        
         const resultado = await window.lojaMusica.disco.deletar(id, false);
         
-        console.log('>>> [RENDERER] Resultado da exclusão:', resultado);
+        if (resultado && resultado.erro) throw new Error(resultado.erro);
         
-        if (resultado && resultado.erro) {
-            throw new Error(resultado.erro);
-        }
-        
-        console.log('>>> [RENDERER] Exclusão bem-sucedida, recarregando lista...');
+        if (discosDaPagina.length === 1 && paginaAtual > 1) paginaAtual--;
+
         await carregarDiscos();
-        
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Sucesso',
-            mensagem: 'Disco deletado com sucesso!'
-        });
+        window.dialog.exibirDialogMensagem({ titulo: 'Sucesso', mensagem: 'Disco deletado com sucesso!' });
         
     } catch (erro) {
-        console.error('>>> [RENDERER] Erro ao deletar disco:', erro);
-        
         if (erro.message && erro.message.includes('músicas associadas')) {
-            console.log('>>> [RENDERER] Disco tem músicas associadas, perguntando ao usuário...');
-            
+            mostrarLoading(false);
             const deletarComMusicas = await window.dialog.exibirDialogConfirmacao({
                 titulo: 'Disco com músicas',
-                mensagem: 'Este disco possui músicas associadas. Deseja deletar mesmo assim? Todas as músicas serão removidas do disco (mas as músicas em si permanecerão).'
+                mensagem: 'Este disco possui músicas associadas. Deseja deletar mesmo assim? Todas as músicas serão removidas do disco.'
             });
             
             if (deletarComMusicas) {
+                mostrarLoading(true);
                 try {
-                    console.log('>>> [RENDERER] Chamando disco.deletar com force=true para ID:', id);
-                    
                     const resultadoForce = await window.lojaMusica.disco.deletar(id, true);
+                    if (resultadoForce && resultadoForce.erro) throw new Error(resultadoForce.erro);
                     
-                    console.log('>>> [RENDERER] Resultado da deleção com force=true:', resultadoForce);
-                    
-                    // verifica se o resultado com force deu erro
-                    if (resultadoForce && resultadoForce.erro) {
-                        throw new Error(resultadoForce.erro);
-                    }
-                    
-                    console.log('>>> [RENDERER] Deleção com force bem-sucedida, recarregando lista...');
+                    if (discosDaPagina.length === 1 && paginaAtual > 1) paginaAtual--;
                     await carregarDiscos();
                     
-                    window.dialog.exibirDialogMensagem({
-                        titulo: 'Sucesso',
-                        mensagem: 'Disco e suas associações deletados com sucesso!'
-                    });
-                    
+                    window.dialog.exibirDialogMensagem({ titulo: 'Sucesso', mensagem: 'Disco e suas associações deletados com sucesso!' });
                 } catch (erro2) {
-                    console.error('>>> [RENDERER] Erro ao deletar disco com force=true:', erro2);
-                    window.dialog.exibirDialogMensagem({
-                        titulo: 'Erro',
-                        mensagem: erro2.message || 'Erro ao deletar disco'
-                    });
+                    window.dialog.exibirDialogMensagem({ titulo: 'Erro', mensagem: erro2.message || 'Erro ao deletar disco' });
                 }
             }
         } else {
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Erro',
-                mensagem: erro.message || 'Erro ao deletar disco'
-            });
+            window.dialog.exibirDialogMensagem({ titulo: 'Erro', mensagem: erro.message || 'Erro ao deletar disco' });
         }
+    } finally {
+        mostrarLoading(false);
     }
 }
 
@@ -494,11 +422,12 @@ async function criarDisco() {
         });
 
         elements.formDisco.reset();
+        paginaAtual = 1;
         await carregarDiscos();
 
         window.dialog.exibirDialogMensagem({
             titulo: 'Sucesso',
-            mensagem: `Disco "${discoCriado.nome}" cadastrado com sucesso!`
+            mensagem: `Disco "${discoCriado.nome || nome}" cadastrado com sucesso!`
         });
     } catch (erro) {
         console.error('Erro ao cadastrar disco:', erro);
@@ -537,4 +466,3 @@ function validarCamposCriacao(nome, data, gravadora, interprete) {
 
 window.editarDisco = editarDisco;
 window.deletarDisco = deletarDisco;
-window.confirmarEdicao = confirmarEdicao;
