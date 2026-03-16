@@ -5,7 +5,6 @@ const loadingOverlay = document.getElementById('loadingOverlay');
 let gravadoraEditandoId = null;
 let gravadoraEditandoResolve = null;
 
-// Controle de Paginação Real (Baseado em paginacao.css)
 let paginaAtual = 1;
 const itensPorPagina = 10;
 let totalGravadorasNoBanco = 0;
@@ -102,7 +101,7 @@ function proximaPagina() {
 
 function mostrarLoading(show) {
     if (loadingOverlay) {
-        loadingOverlay.style.display = show ? 'flex' : 'none'; // Flex para centralizar o spinner
+        loadingOverlay.style.display = show ? 'flex' : 'none';
     }
 }
 
