@@ -33,7 +33,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="../buscar/buscar.html">
+                            <a class="nav-link" href="../buscar/buscar.html">
                                 <i class="bi bi-search"></i> Busca
                             </a>
                         </li>
@@ -49,133 +49,85 @@
     </header>
 
     <main class="container mt-4">
-        <!-- Breadcrumb -->
         <div class="breadcrumb-container">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="../index.html"><i class="bi bi-house-door"></i> Home</a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="../cadastro/cadastro.html">Cadastro</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        <i class="bi bi-building"></i> Gravadoras
-                    </li>
+                    <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Gravadoras</li>
                 </ol>
             </nav>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>🏢 Gerenciar Gravadoras</h1>
-            <a href="../cadastro/cadastro.html" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Voltar ao Cadastro
-            </a>
-        </div>
-
-        <!-- Formulário de cadastro -->
         <div class="card mb-4">
             <div class="card-header bg-success text-white">
-                <h2 class="h5 mb-0"><i class="bi bi-plus-circle"></i> Cadastrar Nova Gravadora</h2>
+                <h2 class="h5 mb-0"><i class="bi bi-plus-circle"></i> Cadastrar Gravadora</h2>
             </div>
             <div class="card-body">
                 <form id="form-gravadora">
                     <div class="mb-3">
-                        <label for="nome" class="form-label">Nome da Gravadora</label>
-                        <input type="text" class="form-control" id="nome" name="nome"
-                            placeholder="Digite o nome da gravadora" autofocus required>
+                        <label class="form-label">Nome da Gravadora</label>
+                        <input type="text" class="form-control" name="nome" placeholder="Ex: Sony Music" required>
                     </div>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-save"></i> Salvar
-                    </button>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Salvar</button>
                 </form>
             </div>
         </div>
 
-        <!-- Lista de gravadoras -->
-        <div class="card">
-            <div class="card-header bg-dark text-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h2 class="h5 mb-0"><i class="bi bi-list"></i> Gravadoras Cadastradas</h2>
-                    <span class="badge bg-info" id="totalGravadorasCount">0 gravadora(s)</span>
-                </div>
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0"><i class="bi bi-building"></i> Gravadoras</h2>
+                <span class="badge bg-info" id="totalRegistrosCount">0</span>
             </div>
-            <div class="card-body">
+            <div class="card-body position-relative">
+                <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                    <div class="loading-spinner-small"></div>
+                </div>
+
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover" id="lista-gravadora">
+                    <table class="table table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Nome</th>
-                                <th style="width: 180px;">Ações</th>
+                                <th style="width: 150px;">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-gravadora">
-                            <tr>
-                                <td colspan="3" class="text-center">
-                                    <div class="spinner-border text-success" role="status">
-                                        <span class="visually-hidden">Carregando...</span>
-                                    </div>
-                                    <br>Carregando gravadoras...
-                                </td>
-                            </tr>
-                        </tbody>
+                        <tbody id="tbody-gravadora"></tbody>
                     </table>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div class="resumo-resultados text-muted" id="resumoResultados">
-                        Mostrando 0-0 de 0 gravadoras
+                <div class="paginacao">
+                    <div class="resumo-resultados" id="resumoResultados"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn-pagina" id="btnAnterior" onclick="paginaAnterior()"><i
+                                class="bi bi-chevron-left"></i></button>
+                        <span class="paginacao-info" id="paginacaoInfo">Página 1</span>
+                        <button class="btn-pagina" id="btnProxima" onclick="proximaPagina()"><i
+                                class="bi bi-chevron-right"></i></button>
                     </div>
-                    <nav>
-                        <ul class="pagination mb-0">
-                            <li class="page-item">
-                                <button class="page-link" id="btnAnterior" onclick="paginaAnterior()" disabled>
-                                    <i class="bi bi-chevron-left"></i> Anterior
-                                </button>
-                            </li>
-                            <li class="page-item disabled">
-                                <span class="page-link" id="paginacaoInfo">Página 1 de 1</span>
-                            </li>
-                            <li class="page-item">
-                                <button class="page-link" id="btnProxima" onclick="proximaPagina()" disabled>
-                                    Próxima <i class="bi bi-chevron-right"></i>
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modal de Edição -->
     <div id="edicaoGravadoraModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="edicaoTitulo">Editar Gravadora</h3>
+                <h3>Editar Gravadora</h3>
+                <button class="close-btn" onclick="fecharModalEdicao()">&times;</button>
             </div>
             <div class="modal-body">
-                <p id="edicaoMensagem"></p>
-
-                <div class="valor-atual-info mb-3">
-                    <strong>Nome atual:</strong>
-                    <span id="valorAtualTexto" class="text-primary"></span>
+                <div class="valor-atual-info">
+                    <strong>Nome Atual:</strong> <span id="valorAtualTexto"></span>
                 </div>
-
                 <div class="form-group">
-                    <label for="edicaoInput" class="form-label">Novo nome:</label>
-                    <input type="text" id="edicaoInput" class="form-control"
-                        placeholder="Digite o novo nome da gravadora..." />
+                    <label>Novo Nome:</label>
+                    <input type="text" id="edicaoInput" class="edicao-input">
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="edicaoBtnCancelar" class="btn btn-secondary">
-                    <i class="bi bi-x-lg"></i> Cancelar
-                </button>
-                <button id="edicaoBtnConfirmar" class="btn btn-success">
-                    <i class="bi bi-check-lg"></i> Salvar Alterações
-                </button>
+                <button class="btn btn-secondary" onclick="fecharModalEdicao()">Cancelar</button>
+                <button class="btn btn-success" id="edicaoBtnConfirmar">Salvar Alterações</button>
             </div>
         </div>
     </div>

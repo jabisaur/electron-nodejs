@@ -50,40 +50,55 @@ const criar = (descricao) => {
     });
 }
 
-const listar = () => {
-    console.log('>>> lojaMusica:estilo:listar')
-    
+const listar = (pagina = 1, itensPorPagina = 10) => {
+    console.log(`>>> lojaMusica:estilo:listar > Página: ${pagina}`);
+    const offset = (pagina - 1) * itensPorPagina;
+
     return new Promise((resolve, reject) => {
-        db.all('SELECT * FROM estilo ORDER BY descricao;', [], (erro, estilos) => {  
+        db.all(
+            'SELECT * FROM estilo ORDER BY descricao LIMIT ? OFFSET ?', 
+            [itensPorPagina, offset], 
+            (erro, estilos) => {  
+                if (erro) {
+                    console.error('Erro ao listar estilos:', erro);
+                    reject(erro);
+                } else {
+                    resolve(estilos);
+                }
+            }
+        );
+    });
+}
+
+const contarTotal = () => {
+    console.log('>>> lojaMusica:estilo:contarTotal');
+    return new Promise((resolve, reject) => {
+        db.get('SELECT COUNT(*) as total FROM estilo', [], (erro, row) => {
             if (erro) {
-                console.error('Erro ao listar estilos:', erro);
+                console.error('Erro ao contar estilos:', erro);
                 reject(erro);
             } else {
-                console.log(`${estilos.length} estilos encontrados`);
-                resolve(estilos);
+                resolve(row ? row.total : 0);
             }
-        })
-    })
+        });
+    });
 }
 
 const deletar = (id) => {
      console.log('>>> lojaMusica:estilo:deletar > ID', id)
     
     return new Promise((resolve, reject) => {
-        // verifica se existem músicas
         db.get('SELECT COUNT(*) as total FROM musica WHERE estilo_id = ?', [id], (erro, musicas) => {
             if (erro) {
                 reject(erro);
                 return;
             }
-    
-            // se tem músicas linkadas com o estilo, não pode deletar
+
             if (musicas.total > 0) {
                 reject(new Error('Existem músicas associadas a este estilo'));
                 return;
             }
-    
-            // se não tem músicas, pode deletar
+
             db.run('DELETE FROM estilo WHERE estilo_id = ?', [id], function(erro) {
                 if (erro) {
                     reject(erro);
@@ -206,6 +221,7 @@ const buscarPorDescricao = (descricao) => {
 module.exports = {
     criar, 
     listar,
+    contarTotal,
     deletar,
     editar,
     buscar,

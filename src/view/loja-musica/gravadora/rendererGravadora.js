@@ -1,12 +1,15 @@
-const formGravadora = document.getElementById('form-gravadora')
-const tbodyGravadora = document.getElementById('tbody-gravadora')
+const formGravadora = document.getElementById('form-artista');
+const tbodyGravadora = document.getElementById('tbody-gravadora');
+const loadingOverlay = document.getElementById('loadingOverlay');
 
 let gravadoraEditandoId = null;
 let gravadoraEditandoResolve = null;
 
+// Controle de Paginação Real (Baseado em paginacao.css)
 let paginaAtual = 1;
 const itensPorPagina = 10;
 let totalGravadorasNoBanco = 0;
+let gravadorasCarregadas = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Página carregada, buscando gravadoras...');
@@ -14,26 +17,25 @@ document.addEventListener('DOMContentLoaded', () => {
     configurarModalEdicao();
 });
 
-async function carregarMusicas() {
-    await carregarGravadoras();
-}
-
 async function carregarGravadoras() {
+    mostrarLoading(true);
     try {
         const gravadoras = await window.lojaMusica.gravadora.listar(paginaAtual, itensPorPagina);
-        
+
         totalGravadorasNoBanco = await window.lojaMusica.gravadora.contarTotal();
         
+        gravadorasCarregadas = gravadoras;
         console.log('Gravadoras carregadas:', gravadoras.length, 'Total no banco:', totalGravadorasNoBanco);
         
         atualizarTabela(gravadoras);
-        
     } catch (erro) {
         console.error('Erro ao carregar gravadoras:', erro);
         window.dialog.exibirDialogMensagem({
             titulo: 'Erro',
             mensagem: 'Erro ao carregar gravadoras: ' + erro.message
         });
+    } finally {
+        mostrarLoading(false);
     }
 }
 
@@ -44,7 +46,8 @@ function atualizarTabela(gravadoras) {
     const inicioDisplay = (paginaAtual - 1) * itensPorPagina + 1;
     const fimDisplay = Math.min(paginaAtual * itensPorPagina, totalGravadorasNoBanco);
 
-    document.getElementById('paginacaoInfo').textContent = `Página ${paginaAtual} de ${totalPaginas || 1}`;
+    const infoPagina = document.getElementById('paginacaoInfo');
+    if (infoPagina) infoPagina.textContent = `Página ${paginaAtual} de ${totalPaginas || 1}`;
     
     const resumo = document.getElementById('resumoResultados');
     if (resumo) {
@@ -53,6 +56,8 @@ function atualizarTabela(gravadoras) {
             : `Mostrando ${inicioDisplay}-${fimDisplay} de ${totalGravadorasNoBanco} gravadoras`;
     }
 
+    const badgeTotal = document.getElementById('totalRegistrosCount');
+    if (badgeTotal) badgeTotal.textContent = totalGravadorasNoBanco;
 
     document.getElementById('btnAnterior').disabled = paginaAtual <= 1;
     document.getElementById('btnProxima').disabled = paginaAtual >= totalPaginas;
@@ -62,10 +67,9 @@ function atualizarTabela(gravadoras) {
         return;
     }
 
-    let html = '';
-    gravadoras.forEach(gravadora => {
+    tbodyGravadora.innerHTML = gravadoras.map(gravadora => {
         const nomeEscapada = gravadora.nome.replace(/'/g, "\\'");
-        html += `
+        return `
             <tr>
                 <td>${gravadora.gravadora_id}</td>
                 <td>${gravadora.nome}</td>
@@ -78,8 +82,7 @@ function atualizarTabela(gravadoras) {
                     </button>
                 </td>
             </tr>`;
-    });
-    tbodyGravadora.innerHTML = html;
+    }).join('');
 }
 
 function paginaAnterior() {
@@ -97,53 +100,50 @@ function proximaPagina() {
     }
 }
 
-async function verificarGravadoraExistente(nome, idIgnorar = null) {
-    try {
-        const gravadoraExistente = await window.lojaMusica.gravadora.buscarPorNome(nome);
-        if (gravadoraExistente && (!idIgnorar || gravadoraExistente.gravadora_id !== idIgnorar)) {
-            return gravadoraExistente;
-        }
-        return null;
-    } catch (erro) {
-        console.error('Erro ao verificar gravadora:', erro);
-        throw erro;
+function mostrarLoading(show) {
+    if (loadingOverlay) {
+        loadingOverlay.style.display = show ? 'flex' : 'none'; // Flex para centralizar o spinner
     }
 }
 
 if (formGravadora) {
     formGravadora.addEventListener('submit', async (event) => {
-        event.preventDefault()
-        const inputNome = formGravadora.querySelector('[name="nome"]')
-        const nome = inputNome.value.trim()
+        event.preventDefault();
+        const inputNome = formGravadora.querySelector('[name="nome"]');
+        const nome = inputNome.value.trim();
         
         if (!nome) {
             window.dialog.exibirDialogMensagem({ titulo: 'Atenção', mensagem: 'Digite um nome para a gravadora' });
             return;
         }
 
+        mostrarLoading(true);
         try {
-            const gravadoraExistente = await verificarGravadoraExistente(nome);
-            if (gravadoraExistente) {
+            const existe = await window.lojaMusica.gravadora.buscarPorNome(nome);
+            if (existe) {
                 window.dialog.exibirDialogMensagem({ titulo: 'Erro', mensagem: `A gravadora "${nome}" já existe.` });
                 return;
             }
             
-            await window.lojaMusica.gravadora.create(nome);
+            await window.lojaMusica.gravadora.criar(nome);
+            inputNome.value = '';
             paginaAtual = 1;
             await carregarGravadoras();
             
-            window.dialog.exibirDialogMensagem({ titulo: 'Sucesso', mensagem: 'Gravadora cadastrada!' });
+            window.dialog.exibirDialogMensagem({ titulo: 'Sucesso', mensagem: 'Gravadora cadastrada com sucesso!' });
         } catch (erro) {
             console.error(erro);
+        } finally {
+            mostrarLoading(false);
         }
-    })
+    });
 }
 
 function configurarModalEdicao() {
     const btnCancelar = document.getElementById('edicaoBtnCancelar');
     const btnConfirmar = document.getElementById('edicaoBtnConfirmar');
-    btnCancelar.onclick = fecharModalEdicao;
-    btnConfirmar.onclick = confirmarEdicao;
+    if (btnCancelar) btnCancelar.onclick = fecharModalEdicao;
+    if (btnConfirmar) btnConfirmar.onclick = confirmarEdicao;
 }
 
 function abrirModalEdicao(id, nomeAtual) {
@@ -158,22 +158,29 @@ function abrirModalEdicao(id, nomeAtual) {
 
 function fecharModalEdicao() {
     document.getElementById('edicaoGravadoraModal').style.display = 'none';
-    if (gravadoraEditandoResolve) gravadoraEditandoResolve(null);
+    if (gravadoraEditandoResolve) {
+        gravadoraEditandoResolve(null);
+        gravadoraEditandoResolve = null;
+    }
 }
 
 function confirmarEdicao() {
     const novoValor = document.getElementById('edicaoInput').value.trim();
     document.getElementById('edicaoGravadoraModal').style.display = 'none';
-    if (gravadoraEditandoResolve) gravadoraEditandoResolve(novoValor);
+    if (gravadoraEditandoResolve) {
+        gravadoraEditandoResolve(novoValor);
+        gravadoraEditandoResolve = null;
+    }
 }
 
 async function editarGravadora(id, nomeAtual) {
     const novoNome = await abrirModalEdicao(id, nomeAtual);
     if (!novoNome || novoNome === nomeAtual) return;
 
+    mostrarLoading(true);
     try {
-        const existente = await verificarGravadoraExistente(novoNome, id);
-        if (existente) {
+        const existe = await window.lojaMusica.gravadora.buscarPorNome(novoNome);
+        if (existe && existe.gravadora_id !== id) {
             window.dialog.exibirDialogMensagem({ titulo: 'Erro', mensagem: 'Este nome já está em uso.' });
             return;
         }
@@ -181,6 +188,8 @@ async function editarGravadora(id, nomeAtual) {
         await carregarGravadoras();
     } catch (erro) {
         console.error(erro);
+    } finally {
+        mostrarLoading(false);
     }
 }
 
@@ -191,15 +200,20 @@ async function deletarGravadora(id) {
     });
     if (!confirmado) return;
     
+    mostrarLoading(true);
     try {
         const resultado = await window.lojaMusica.gravadora.deletar(id);
         if (resultado && resultado.erro) throw new Error(resultado.erro);
-        
-        if (musicasFiltradas.length === 1 && paginaAtual > 1) paginaAtual--;
+
+        if (gravadorasCarregadas.length === 1 && paginaAtual > 1) {
+            paginaAtual--;
+        }
         
         await carregarGravadoras();
     } catch (erro) {
         window.dialog.exibirDialogMensagem({ titulo: 'Erro', mensagem: erro.message });
+    } finally {
+        mostrarLoading(false);
     }
 }
 
@@ -207,3 +221,4 @@ window.editarGravadora = editarGravadora;
 window.deletarGravadora = deletarGravadora;
 window.paginaAnterior = paginaAnterior;
 window.proximaPagina = proximaPagina;
+window.fecharModalEdicao = fecharModalEdicao;
