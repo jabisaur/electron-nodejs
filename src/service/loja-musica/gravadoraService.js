@@ -105,20 +105,27 @@ const criar = (nome) => {
     })
 }
 
-const listar = () => {
-    console.log('>>> lojaMusica:gravadora:listar')
-
+const listar = (pagina = 1, itensPorPagina = 10) => {
+    const offset = (pagina - 1) * itensPorPagina;
     return new Promise((resolve, reject) => {
-        db.all('SELECT * FROM gravadora ORDER BY nome', [], (erro, gravadora) => {
-            if (erro) {
-                console.error('Erro ao listar gravadoras: ', erro)
-                reject(erro)
-            } else {
-                console.log(`${gravadora.length} gravadoras encontradas.`)
-                resolve(gravadora)
+        db.all(
+            'SELECT * FROM gravadora ORDER BY nome LIMIT ? OFFSET ?',
+            [itensPorPagina, offset],
+            (erro, gravadoras) => {
+                if (erro) reject(erro);
+                else resolve(gravadoras);
             }
-        })   
-    })
+        );
+    });
+}
+
+const contarTotal = () => {
+    return new Promise((resolve, reject) => {
+        db.get('SELECT COUNT(*) as total FROM gravadora', [], (erro, row) => {
+            if (erro) reject(erro);
+            else resolve(row ? row.total : 0);
+        });
+    });
 }
 
 const deletar = (id) => {
@@ -208,6 +215,7 @@ const buscarPorNome = (nome) => {
 module.exports = {
     criar, 
     listar,
+    contarTotal,
     deletar,
     editar,
     buscar,

@@ -50,20 +50,31 @@ const criar = (nome) => {
     })
 };
 
-const listar = () => {
-    console.log('>>> lojaMusica:artista:listar')
-
+const listar = (pagina = 1, itensPorPagina = 10) => {
+    const offset = (pagina - 1) * itensPorPagina;
     return new Promise((resolve, reject) => {
-        db.all('SELECT * FROM artista ORDER BY nome', [], (erro, artistas) => {
-            if (erro) {
-                console.error('Erro ao listar artistas: ', erro)
-                reject(erro)
-            } else {
-                console.log(`${artistas.length} artistas encontrados.`)
-                resolve(artistas)
+        db.all(
+            'SELECT * FROM artista ORDER BY nome LIMIT ? OFFSET ?',
+            [itensPorPagina, offset],
+            (erro, artistas) => {
+                if (erro) {
+                    console.error('Erro ao listar artistas: ', erro);
+                    reject(erro);
+                } else {
+                    resolve(artistas);
+                }
             }
-        })       
-    })
+        );
+    });
+};
+
+const contarTotal = () => {
+    return new Promise((resolve, reject) => {
+        db.get('SELECT COUNT(*) as total FROM artista', [], (erro, row) => {
+            if (erro) reject(erro);
+            else resolve(row ? row.total : 0);
+        });
+    });
 };
 
 const deletar = (id) => {
@@ -224,6 +235,7 @@ const buscarPorNome = (nome) => {
 module.exports = {
     criar,
     listar,
+    contarTotal,
     editar,
     deletar,
     buscar,

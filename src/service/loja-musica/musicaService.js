@@ -113,12 +113,13 @@ const criar = (dados) => {
     })
 }
 
-const listar = () => {
-    console.log('>>> lojaMusica:musica:listar')
-
+const listar = (pagina = 1, itensPorPagina = 10, filtros = {}) => {
     return new Promise((resolve, reject) => {
-        db.all(
-            `SELECT 
+        const offset = (pagina - 1) * itensPorPagina;
+        const params = [];
+
+        let sql = `
+            SELECT 
                 m.*, 
                 e.descricao as estilo_nome,
                 (SELECT GROUP_CONCAT(a.nome, ' | ') 
@@ -131,20 +132,56 @@ const listar = () => {
                  WHERE c.musica_id = m.musica_id) as compositores_nomes
             FROM musica m
             INNER JOIN estilo e ON m.estilo_id = e.estilo_id
-            ORDER BY m.nome`,
-            [],
-            (erro, musicas) => {
-                if(erro) {
-                    console.error('Erro ao listar músicas: ', erro)
-                    reject(erro)
-                } else {
-                    console.log(`${musicas.length} músicas encontradas.`)
-                    resolve(musicas)
-                }
+            WHERE 1=1
+        `;
+
+        if (filtros.nome) {
+            sql += ` AND m.nome LIKE ?`;
+            params.push(`%${filtros.nome}%`);
+        }
+        if (filtros.estilo_id) {
+            sql += ` AND m.estilo_id = ?`;
+            params.push(filtros.estilo_id);
+        }
+        if (filtros.ano) {
+            sql += ` AND strftime('%Y', m.data_lancamento) = ?`;
+            params.push(filtros.ano);
+        }
+
+        sql += ` ORDER BY m.nome LIMIT ? OFFSET ?`;
+        params.push(itensPorPagina, offset);
+
+        db.all(sql, params, (erro, musicas) => {
+            if (erro) {
+                console.error('Erro ao listar músicas: ', erro);
+                reject(erro);
+            } else {
+                resolve(musicas);
             }
-        )
-    })
-}
+        });
+    });
+};
+
+const contarTotal = (filtros = {}) => {
+    return new Promise((resolve, reject) => {
+        let sql = `SELECT COUNT(*) as total FROM musica WHERE 1=1`;
+        const params = [];
+
+        if (filtros.nome) {
+            sql += ` AND nome LIKE ?`;
+            params.push(`%${filtros.nome}%`);
+        }
+        if (filtros.estilo_id) {
+            sql += ` AND estilo_id = ?`;
+            params.push(filtros.estilo_id);
+        }
+
+        db.get(sql, params, (erro, row) => {
+            if (erro) reject(erro);
+            else resolve(row.total);
+        });
+    });
+};
 
 const buscar = (id) => {
     console.log('>>> lojaMusica:musica:buscar > ID: ', id)
@@ -552,6 +589,7 @@ const buscarCompositores = (musicaId) => {
 module.exports = {
     criar,
     listar,
+    contarTotal,
     buscar,
     editar,
     deletar,

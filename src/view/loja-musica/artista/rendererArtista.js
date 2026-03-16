@@ -1,266 +1,177 @@
-const formArtista = document.getElementById('form-artista')
-const tbodyArtistas = document.getElementById('tbody-artistas')
+const formArtista = document.getElementById('form-artista');
+const tbodyArtistas = document.getElementById('tbody-artistas');
+const loadingOverlay = document.getElementById('loadingOverlay');
 
 let artistaEditandoId = null;
 let artistaEditandoResolve = null;
 
+let paginaAtual = 1;
+const itensPorPagina = 10;
+let totalArtistasNoBanco = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Página carregada, buscando artistas...')
-    carregarArtistas()
-    configurarModalEdicao()
+    carregarArtistas();
+    configurarModalEdicao();
 });
 
 async function carregarArtistas() {
+    mostrarLoading(true);
     try {
-        console.log('Carregando artistas...')
+        const artistas = await window.lojaMusica.artista.listar(paginaAtual, itensPorPagina);
 
-        const artistas = await window.lojaMusica.artista.listar()
-
-        console.log('Artistas: ', artistas)
-
-        if (!artistas || artistas.length === 0) {
-            if (tbodyArtistas) {
-                tbodyArtistas.innerHTML = `
-                <tr>
-                    <td colspan="3" style="text-align: center; padding: 20px; color: #666;">
-                        Nenhum artista cadastrado ainda.
-                    </td>
-                </tr>
-                `
-            }
-            return
-        }
-
-        let html = ''
-        for (const artista of artistas) {
-            const nomeEscapada = artista.nome.replace(/'/g, "\\'")
-
-            html += `
-                <tr>
-                    <td>${artista.artista_id}</td>
-                    <td>${artista.nome}</td>
-                    <td>
-                        <button class="btn btn-primary btn-sm" onclick="editarArtista(${artista.artista_id}, '${nomeEscapada}')">
-                            <i class="bi bi-pencil"></i> Editar
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="deletarArtista(${artista.artista_id})">
-                            <i class="bi bi-trash"></i> Deletar
-                        </button>
-                    </td>
-                </tr>
-            `
-        }
-
-        tbodyArtistas.innerHTML = html
+        totalArtistasNoBanco = await window.lojaMusica.artista.contarTotal();
         
+        atualizarTabela(artistas);
     } catch (erro) {
-        console.error('Erro ao carregar artistas: ', erro)
+        console.error('Erro ao carregar artistas:', erro);
         window.dialog.exibirDialogMensagem({
             titulo: 'Erro',
-            mensagem: 'Erro ao carregar artistas: ' + erro.message
-        })
+            mensagem: 'Erro ao carregar a lista de artistas.'
+        });
+    } finally {
+        mostrarLoading(false);
     }
 }
 
-async function verificarArtistaExistente(nome, idIgnorar = null) {
-    try {
-        const artistaExistente = await window.lojaMusica.artista.buscarPorNome(nome)
-        
-        if (artistaExistente && (!idIgnorar || artistaExistente.artista_id !== idIgnorar)) {
-            return artistaExistente
-        }
-        
-        return null
-    } catch (erro) {
-        console.error('Erro ao verificar artista existente:', erro)
-        throw erro
+function atualizarTabela(artistas) {
+    if (!tbodyArtistas) return;
+
+    const totalPaginas = Math.ceil(totalArtistasNoBanco / itensPorPagina);
+    const inicioDisplay = (paginaAtual - 1) * itensPorPagina + 1;
+    const fimDisplay = Math.min(paginaAtual * itensPorPagina, totalArtistasNoBanco);
+
+    const infoPagina = document.getElementById('paginacaoInfo');
+    if (infoPagina) infoPagina.textContent = `Página ${paginaAtual} de ${totalPaginas || 1}`;
+    
+    const resumo = document.getElementById('resumoResultados');
+    if (resumo) {
+        resumo.textContent = totalArtistasNoBanco === 0 
+            ? "Nenhum artista encontrado" 
+            : `Mostrando ${inicioDisplay}-${fimDisplay} de ${totalArtistasNoBanco} artistas`;
+    }
+
+    const badgeTotal = document.getElementById('totalArtistasCount');
+    if (badgeTotal) badgeTotal.textContent = `${totalArtistasNoBanco} artista(s)`;
+
+    document.getElementById('btnAnterior').disabled = paginaAtual <= 1;
+    document.getElementById('btnProxima').disabled = paginaAtual >= totalPaginas;
+
+    if (!artistas || artistas.length === 0) {
+        tbodyArtistas.innerHTML = '<tr><td colspan="3" class="text-center">Nenhum artista cadastrado ainda.</td></tr>';
+        return;
+    }
+
+    tbodyArtistas.innerHTML = artistas.map(artista => {
+        const nomeEscapada = artista.nome.replace(/'/g, "\\'");
+        return `
+            <tr>
+                <td>${artista.artista_id}</td>
+                <td>${artista.nome}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm me-1" onclick="editarArtista(${artista.artista_id}, '${nomeEscapada}')">
+                        <i class="bi bi-pencil"></i> Editar
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="deletarArtista(${artista.artista_id})">
+                        <i class="bi bi-trash"></i> Deletar
+                    </button>
+                </td>
+            </tr>`;
+    }).join('');
+}
+
+function paginaAnterior() {
+    if (paginaAtual > 1) {
+        paginaAtual--;
+        carregarArtistas();
+    }
+}
+
+function proximaPagina() {
+    const totalPaginas = Math.ceil(totalArtistasNoBanco / itensPorPagina);
+    if (paginaAtual < totalPaginas) {
+        paginaAtual++;
+        carregarArtistas();
     }
 }
 
 if (formArtista) {
     formArtista.addEventListener('submit', async (event) => {
-        event.preventDefault()
+        event.preventDefault();
+        const inputNome = formArtista.querySelector('[name="nome"]');
+        const nome = inputNome.value.trim();
 
-        const inputNome = formArtista.querySelector('[name="nome"]')
-        const nome = inputNome.value.trim()
-
-        if (!nome) {
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Atenção',
-                mensagem: 'Por favor, digite um nome para o artista'
-            })
-            inputNome.focus()
-            return
-        }
+        if (!nome) return;
 
         try {
-            console.log('Verificando se artista já existe:', nome)
-            const artistaExistente = await verificarArtistaExistente(nome)
-            
-            if (artistaExistente) {
-                window.dialog.exibirDialogMensagem({
-                    titulo: 'Artista já cadastrado',
-                    mensagem: `O artista "${nome}" já está cadastrado no sistema.`
-                })
-                inputNome.focus()
-                inputNome.select()
-                return
+            const existe = await window.lojaMusica.artista.buscarPorNome(nome);
+            if (existe) {
+                window.dialog.exibirDialogMensagem({ titulo: 'Atenção', mensagem: 'Este artista já está cadastrado.' });
+                return;
             }
-
-            console.log('Cadastrando artista...', nome)
-
-            const artistaCriado = await window.lojaMusica.artista.criar(nome)
-
-            console.log('Artista criado: ', artistaCriado)
-
-            inputNome.value = ''
-            await carregarArtistas()
-
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Sucesso',
-                mensagem: `Artista "${artistaCriado.nome}" criado com sucesso!`
-            })
             
+            await window.lojaMusica.artista.criar(nome);
+            inputNome.value = '';
+            paginaAtual = 1;
+            await carregarArtistas();
+            
+            window.dialog.exibirDialogMensagem({ titulo: 'Sucesso', mensagem: 'Artista cadastrado com sucesso!' });
         } catch (erro) {
-            console.error('Erro ao cadastrar artista: ', erro)
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Erro',
-                mensagem: 'Erro ao cadastrar artista: ' + erro.message
-            })
+            console.error(erro);
         }
-    })
+    });
 }
 
 function configurarModalEdicao() {
-    const modal = document.getElementById('edicaoArtistaModal')
-    const btnCancelar = document.querySelector('#edicaoArtistaModal .btn-secondary')
-    const btnConfirmar = document.getElementById('edicaoBtnConfirmar')
-    
-    if (!modal) {
-        console.error('Modal não encontrado!')
-        return
-    }
-    
-    if (btnCancelar) {
-        btnCancelar.addEventListener('click', fecharModalEdicao)
-    }
-    
+    const btnConfirmar = document.getElementById('edicaoBtnConfirmar');
     if (btnConfirmar) {
-        btnConfirmar.addEventListener('click', confirmarEdicao)
+        btnConfirmar.addEventListener('click', confirmarEdicao);
     }
-    
-    const closeBtn = document.querySelector('#edicaoArtistaModal .close-btn')
-    if (closeBtn) {
-        closeBtn.addEventListener('click', fecharModalEdicao)
-    }
-    
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            fecharModalEdicao()
-        }
-    })
 }
 
 function abrirModalEdicao(id, nomeAtual) {
     return new Promise((resolve) => {
-        artistaEditandoId = id
-        artistaEditandoResolve = resolve
+        artistaEditandoId = id;
+        artistaEditandoResolve = resolve;
         
-        document.getElementById('edicaoTitulo').textContent = 'Editar Artista'
-        document.getElementById('edicaoMensagem').textContent = `Editando artista ID: ${id}`
-        document.getElementById('valorAtualTexto').textContent = nomeAtual || '(vazio)'
-        
-        const input = document.getElementById('edicaoInput')
-        input.value = nomeAtual || ''
-        input.placeholder = 'Digite o novo nome do artista...'
-        
-        document.getElementById('edicaoArtistaModal').style.display = 'flex'
-        
-    })
+        document.getElementById('valorAtualTexto').textContent = nomeAtual;
+        document.getElementById('edicaoInput').value = nomeAtual;
+        document.getElementById('edicaoArtistaModal').style.display = 'flex';
+    });
 }
 
 function fecharModalEdicao() {
-    document.getElementById('edicaoArtistaModal').style.display = 'none'
+    document.getElementById('edicaoArtistaModal').style.display = 'none';
     if (artistaEditandoResolve) {
-        artistaEditandoResolve(null)
-        artistaEditandoResolve = null
-        artistaEditandoId = null
+        artistaEditandoResolve(null);
+        artistaEditandoResolve = null;
     }
 }
 
 function confirmarEdicao() {
-    const novoValor = document.getElementById('edicaoInput').value.trim()
-    document.getElementById('edicaoArtistaModal').style.display = 'none'
-    
+    const novoValor = document.getElementById('edicaoInput').value.trim();
+    document.getElementById('edicaoArtistaModal').style.display = 'none';
     if (artistaEditandoResolve) {
-        artistaEditandoResolve(novoValor)
-        artistaEditandoResolve = null
-        artistaEditandoId = null
+        artistaEditandoResolve(novoValor);
+        artistaEditandoResolve = null;
     }
 }
 
 async function editarArtista(id, nomeAtual) {
+    const novoNome = await abrirModalEdicao(id, nomeAtual);
+    
+    if (!novoNome || novoNome === nomeAtual) return;
+
     try {
-        const novoNome = await abrirModalEdicao(id, nomeAtual)
-        
-        if (novoNome === null) {
-            console.log('Edição cancelada pelo usuário')
-            return
+        const existe = await window.lojaMusica.artista.buscarPorNome(novoNome);
+        if (existe && existe.artista_id !== id) {
+            window.dialog.exibirDialogMensagem({ titulo: 'Erro', mensagem: 'Já existe um artista com este nome.' });
+            return;
         }
         
-        if (!novoNome) {
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Campo vazio',
-                mensagem: 'O nome do artista não pode ficar vazio.'
-            })
-            return
-        }
-        
-        if (novoNome === nomeAtual) {
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Sem alterações',
-                mensagem: 'O nome do artista não foi alterado.'
-            })
-            return
-        }
-
-        console.log('Verificando se já existe artista com nome:', novoNome)
-        const artistaExistente = await verificarArtistaExistente(novoNome, id)
-        
-        if (artistaExistente) {
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Nome já utilizado',
-                mensagem: `Já existe um artista chamado "${novoNome}" cadastrado.`
-            })
-            return
-        }
-
-        console.log('Atualizando artista ID:', id, 'para:', novoNome)
-
-        const artistaAtualizado = await window.lojaMusica.artista.editar(id, novoNome)
-
-        await carregarArtistas()
-
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Sucesso',
-            mensagem: `Artista atualizado para: "${artistaAtualizado.nome}"!`
-        })
-        
+        await window.lojaMusica.artista.editar(id, novoNome);
+        await carregarArtistas();
     } catch (erro) {
-        console.error('Erro ao editar artista: ', erro)
-        
-        let mensagemErro = 'Erro ao editar artista.'
-        
-        if (erro.message.includes('não encontrado')) {
-            mensagemErro = 'Artista não encontrado.'
-        } else if (erro.message.includes('unique') || erro.message.includes('duplicate')) {
-            mensagemErro = 'Já existe um artista com este nome.'
-        }
-        
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Erro',
-            mensagem: mensagemErro
-        })
+        console.error(erro);
     }
 }
 
@@ -268,51 +179,32 @@ async function deletarArtista(id) {
     const confirmado = await window.dialog.exibirDialogConfirmacao({
         titulo: 'Confirmar exclusão',
         mensagem: 'Tem certeza que deseja excluir este artista?'
-    })
+    });
 
-    if (!confirmado) return
-
+    if (!confirmado) return;
+    
     try {
-        console.log('Deletando artista ID: ', id)
+        const resultado = await window.lojaMusica.artista.deletar(id);
+        if (resultado && resultado.erro) throw new Error(resultado.erro);
 
-        const resultado = await window.lojaMusica.artista.deletar(id)
+        if (paginaAtual > 1 && document.querySelectorAll('#tbody-artistas tr').length === 1) {
+            paginaAtual--;
+        }
         
-        // Verificar se o resultado contém erro
-        if (resultado && resultado.erro) {
-            throw new Error(resultado.erro)
-        }
-
-        await carregarArtistas()
-
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Sucesso',
-            mensagem: 'Artista excluído com sucesso!'
-        })
-
+        await carregarArtistas();
     } catch (erro) {
-        console.error('Erro ao deletar artista: ', erro)
-
-        // Verificar as mensagens de erro específicas
-        if (erro.message.includes('intérpretes associados')) {
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Não é possível excluir',
-                mensagem: 'Este artista possui músicas como intérprete. Remova-o das músicas primeiro.'
-            })
-        } else if (erro.message.includes('compositores associados')) {
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Não é possível excluir',
-                mensagem: 'Este artista possui músicas como compositor. Remova-o das músicas primeiro.'
-            })
-        } else {
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Erro',
-                mensagem: 'Erro ao deletar artista: ' + erro.message
-            })
-        }
+        window.dialog.exibirDialogMensagem({ titulo: 'Erro', mensagem: erro.message });
     }
 }
 
-// tornar as funções globais para os botões HTML
-window.editarArtista = editarArtista
-window.deletarArtista = deletarArtista
-window.fecharModalEdicao = fecharModalEdicao
+function mostrarLoading(show) {
+    if (loadingOverlay) {
+        loadingOverlay.style.display = show ? 'flex' : 'none';
+    }
+}
+
+window.editarArtista = editarArtista;
+window.deletarArtista = deletarArtista;
+window.fecharModalEdicao = fecharModalEdicao;
+window.paginaAnterior = paginaAnterior;
+window.proximaPagina = proximaPagina;

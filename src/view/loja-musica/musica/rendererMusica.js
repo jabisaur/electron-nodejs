@@ -9,10 +9,10 @@ const filtroAno = document.getElementById('filtroAno')
 const loadingOverlay = document.getElementById('loadingOverlay')
 
 let musicaEditandoId = null
-let todasMusicas = []
 let musicasFiltradas = []
 let paginaAtual = 1
 let itensPorPagina = 10
+let totalMusicasNoBanco = 0
 let musicasSelecionadas = []
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -48,10 +48,6 @@ async function carregarEstilos() {
         }
     } catch (erro) {
         console.error('Erro ao carregar estilos:', erro)
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Erro',
-            mensagem: 'Erro ao carregar estilos: ' + erro.message
-        })
     }
 }
 
@@ -75,16 +71,11 @@ async function carregarArtistas() {
         }
     } catch (erro) {
         console.error('Erro ao carregar artistas:', erro)
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Erro',
-            mensagem: 'Erro ao carregar artistas: ' + erro.message
-        })
     }
 }
 
 function carregarAnos() {
     if (!filtroAno) return
-    
     const anoAtual = new Date().getFullYear()
     filtroAno.innerHTML = '<option value="">Todos os anos</option>'
     for (let ano = anoAtual; ano >= 1900; ano--) {
@@ -95,12 +86,16 @@ function carregarAnos() {
 async function carregarMusicas() {
     mostrarLoading(true)
     try {
-        console.log('Carregando todas as músicas...')
-        todasMusicas = await window.lojaMusica.musica.listar()
-        console.log(`${todasMusicas.length} músicas carregadas`)
+        const filtros = {
+            nome: filtroNome ? filtroNome.value.trim() : '',
+            estilo_id: filtroEstilo ? filtroEstilo.value : '',
+            ano: filtroAno ? filtroAno.value : ''
+        }
+
+        musicasFiltradas = await window.lojaMusica.musica.listar(paginaAtual, itensPorPagina, filtros)
+        totalMusicasNoBanco = await window.lojaMusica.musica.contarTotal(filtros)
         
-        musicasFiltradas = [...todasMusicas]
-        aplicarFiltros()
+        atualizarTabela()
         
     } catch (erro) {
         console.error('Erro ao carregar músicas:', erro)
@@ -114,34 +109,8 @@ async function carregarMusicas() {
 }
 
 function aplicarFiltros() {
-    if (!filtroNome || !filtroEstilo || !filtroAno) return
-    
-    const nomeFiltro = filtroNome.value.toLowerCase().trim()
-    const estiloId = filtroEstilo.value
-    const anoFiltro = filtroAno.value
-    
-    musicasFiltradas = todasMusicas.filter(musica => {
-        if (nomeFiltro && !musica.nome.toLowerCase().includes(nomeFiltro)) {
-            return false
-        }
-        
-        if (estiloId && musica.estilo_id != estiloId) {
-            return false
-        }
-        
-        if (anoFiltro) {
-            const anoMusica = musica.data_lancamento ? new Date(musica.data_lancamento).getFullYear() : null
-            if (anoMusica != anoFiltro) {
-                return false
-            }
-        }
-        
-        return true
-    })
-    
-    console.log(`${musicasFiltradas.length} músicas após filtros`)
     paginaAtual = 1
-    atualizarTabela()
+    carregarMusicas()
 }
 
 function limparFiltros() {
@@ -154,11 +123,9 @@ function limparFiltros() {
 function atualizarTabela() {
     if (!tbodyMusica) return
     
-    const totalMusicas = musicasFiltradas.length
-    const totalPaginas = Math.ceil(totalMusicas / itensPorPagina)
-    const inicio = (paginaAtual - 1) * itensPorPagina
-    const fim = Math.min(inicio + itensPorPagina, totalMusicas)
-    const musicasPagina = musicasFiltradas.slice(inicio, fim)
+    const totalPaginas = Math.ceil(totalMusicasNoBanco / itensPorPagina)
+    const inicioDisplay = (paginaAtual - 1) * itensPorPagina + 1
+    const fimDisplay = Math.min(paginaAtual * itensPorPagina, totalMusicasNoBanco)
     
     const totalMusicasCount = document.getElementById('totalMusicasCount')
     const paginacaoInfo = document.getElementById('paginacaoInfo')
@@ -166,42 +133,36 @@ function atualizarTabela() {
     const btnAnterior = document.getElementById('btnAnterior')
     const btnProxima = document.getElementById('btnProxima')
     
-    if (totalMusicasCount) totalMusicasCount.textContent = `${totalMusicas} música(s)`
+    if (totalMusicasCount) totalMusicasCount.textContent = `${totalMusicasNoBanco} música(s)`
     if (paginacaoInfo) paginacaoInfo.textContent = `Página ${paginaAtual} de ${totalPaginas || 1}`
     if (resumoResultados) {
-        resumoResultados.textContent = totalMusicas === 0 
+        resumoResultados.textContent = totalMusicasNoBanco === 0 
             ? `Mostrando 0 de 0 músicas`
-            : `Mostrando ${inicio + 1}-${fim} de ${totalMusicas} músicas`
+            : `Mostrando ${inicioDisplay}-${fimDisplay} de ${totalMusicasNoBanco} músicas`
     }
     
     if (btnAnterior) btnAnterior.disabled = paginaAtual <= 1
     if (btnProxima) btnProxima.disabled = paginaAtual >= totalPaginas
     
-    if (musicasPagina.length === 0) {
+    if (musicasFiltradas.length === 0) {
         tbodyMusica.innerHTML = '<tr><td colspan="9" class="text-center">Nenhuma música encontrada</td></tr>'
         return
     }
     
     let html = ''
-    musicasPagina.forEach(musica => {
+    musicasFiltradas.forEach(musica => {
         const dataFormatada = musica.data_lancamento 
             ? new Date(musica.data_lancamento).toLocaleDateString('pt-BR') 
             : ''
         
         const interpretesTexto = musica.interpretes_nomes ? musica.interpretes_nomes.replace(/ \| /g, ', ') : 'Nenhum'
         const compositoresTexto = musica.compositores_nomes ? musica.compositores_nomes.replace(/ \| /g, ', ') : 'Nenhum'
-        
-        // Escapar aspas simples para não quebrar o onclick
         const nomeEscapado = musica.nome.replace(/'/g, "\\'")
-        
         const checked = musicasSelecionadas.includes(musica.musica_id) ? 'checked' : ''
         
         html += `
             <tr>
-                <td>
-                    <input type="checkbox" class="musica-checkbox" value="${musica.musica_id}" 
-                           ${checked} onchange="toggleSelecionarMusica(this, ${musica.musica_id})">
-                </td>
+                <td><input type="checkbox" class="musica-checkbox" value="${musica.musica_id}" ${checked} onchange="toggleSelecionarMusica(this, ${musica.musica_id})"></td>
                 <td>${musica.musica_id}</td>
                 <td>${musica.nome}</td>
                 <td>${musica.duracao}</td>
@@ -210,15 +171,10 @@ function atualizarTabela() {
                 <td><small title="${interpretesTexto}">${interpretesTexto.substring(0, 30)}${interpretesTexto.length > 30 ? '...' : ''}</small></td>
                 <td><small title="${compositoresTexto}">${compositoresTexto.substring(0, 30)}${compositoresTexto.length > 30 ? '...' : ''}</small></td>
                 <td>
-                    <button class="btn btn-primary btn-sm" onclick="editarMusica(${musica.musica_id})">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="deletarMusica(${musica.musica_id}, '${nomeEscapado}')">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="editarMusica(${musica.musica_id})"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick="deletarMusica(${musica.musica_id}, '${nomeEscapado}')"><i class="bi bi-trash"></i></button>
                 </td>
-            </tr>
-        `
+            </tr>`
     })
     
     tbodyMusica.innerHTML = html
@@ -228,15 +184,15 @@ function atualizarTabela() {
 function paginaAnterior() {
     if (paginaAtual > 1) {
         paginaAtual--
-        atualizarTabela()
+        carregarMusicas()
     }
 }
 
 function proximaPagina() {
-    const totalPaginas = Math.ceil(musicasFiltradas.length / itensPorPagina)
+    const totalPaginas = Math.ceil(totalMusicasNoBanco / itensPorPagina)
     if (paginaAtual < totalPaginas) {
         paginaAtual++
-        atualizarTabela()
+        carregarMusicas()
     }
 }
 
@@ -260,36 +216,17 @@ if (formMusica) {
 
         if (!nome || !duracao || !data_lancamento || !estilo_id || interpretes.length === 0) {
             mostrarLoading(false)
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Campos obrigatórios',
-                mensagem: 'Preencha todos os campos obrigatórios'
-            })
+            window.dialog.exibirDialogMensagem({ titulo: 'Erro', mensagem: 'Preencha os campos obrigatórios' })
             return
         }
 
         try {
-            await window.lojaMusica.musica.criar({
-                nome,
-                duracao,
-                data_lancamento,
-                estilo_id: parseInt(estilo_id),
-                interpretes,
-                compositores
-            })
-            
+            await window.lojaMusica.musica.criar({ nome, duracao, data_lancamento, estilo_id: parseInt(estilo_id), interpretes, compositores })
             formMusica.reset()
             await carregarMusicas()
-            
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Sucesso',
-                mensagem: `Música "${nome}" cadastrada com sucesso!`
-            })
+            window.dialog.exibirDialogMensagem({ titulo: 'Sucesso', mensagem: `Música "${nome}" cadastrada!` })
         } catch (erro) {
-            console.error('Erro:', erro)
-            window.dialog.exibirDialogMensagem({
-                titulo: 'Erro',
-                mensagem: 'Erro ao cadastrar música: ' + erro.message
-            })
+            console.error(erro)
         } finally {
             mostrarLoading(false)
         }
@@ -297,16 +234,11 @@ if (formMusica) {
 }
 
 function configurarModalEdicao() {
-    const modal = document.getElementById('edicaoMusicaModal')
     const btnConfirmar = document.getElementById('edicaoBtnConfirmar')
-    const closeBtn = document.querySelector('#edicaoMusicaModal .close-btn')
-    const btnCancelar = document.querySelector('#edicaoMusicaModal .btn-secondary')
-    
     if (btnConfirmar) {
         btnConfirmar.addEventListener('click', async () => {
             if (!musicaEditandoId) return
             mostrarLoading(true)
-            
             const dados = {
                 nome: document.getElementById('edicaoNome').value,
                 duracao: document.getElementById('edicaoDuracao').value,
@@ -315,43 +247,17 @@ function configurarModalEdicao() {
                 interpretes: Array.from(document.getElementById('edicaoInterpretes').selectedOptions).map(opt => parseInt(opt.value)),
                 compositores: Array.from(document.getElementById('edicaoCompositores').selectedOptions).map(opt => parseInt(opt.value))
             }
-            
-            if (!dados.nome || !dados.duracao || !dados.data_lancamento || !dados.estilo_id || dados.interpretes.length === 0) {
-                mostrarLoading(false)
-                window.dialog.exibirDialogMensagem({
-                    titulo: 'Campos obrigatórios',
-                    mensagem: 'Preencha todos os campos obrigatórios'
-                })
-                return
-            }
-            
             try {
                 await window.lojaMusica.musica.editar(musicaEditandoId, dados)
                 await carregarMusicas()
                 fecharModalEdicao()
-                
-                window.dialog.exibirDialogMensagem({
-                    titulo: 'Sucesso',
-                    mensagem: 'Música atualizada com sucesso!'
-                })
             } catch (erro) {
-                console.error('Erro ao editar:', erro)
-                window.dialog.exibirDialogMensagem({
-                    titulo: 'Erro',
-                    mensagem: 'Erro ao editar música: ' + erro.message
-                })
+                console.error(erro)
             } finally {
                 mostrarLoading(false)
             }
         })
     }
-    
-    if (closeBtn) closeBtn.addEventListener('click', fecharModalEdicao)
-    if (btnCancelar) btnCancelar.addEventListener('click', fecharModalEdicao)
-    
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) fecharModalEdicao()
-    })
 }
 
 async function editarMusica(id) {
@@ -364,7 +270,6 @@ async function editarMusica(id) {
         const estilos = await window.lojaMusica.estilo.listar()
 
         document.getElementById('edicaoTitulo').textContent = 'Editar Música'
-        document.getElementById('edicaoMensagem').textContent = `Editando: ${musica.nome}`
         document.getElementById('edicaoNome').value = musica.nome
         document.getElementById('edicaoDuracao').value = musica.duracao
         document.getElementById('edicaoData').value = musica.data_lancamento.split('T')[0]
@@ -375,31 +280,18 @@ async function editarMusica(id) {
         })
         document.getElementById('edicaoEstilo').innerHTML = estiloHtml
 
-        const interpreteIds = interpretes.map(i => i.artista_id)
-        let interpreteHtml = ''
-        artistas.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(a => {
-            const selected = interpreteIds.includes(a.artista_id) ? 'selected' : ''
-            interpreteHtml += `<option value="${a.artista_id}" ${selected}>${a.nome}</option>`
-        })
-        document.getElementById('edicaoInterpretes').innerHTML = interpreteHtml
+        const intIds = interpretes.map(i => i.artista_id)
+        let intHtml = ''
+        artistas.forEach(a => intHtml += `<option value="${a.artista_id}" ${intIds.includes(a.artista_id) ? 'selected' : ''}>${a.nome}</option>`)
+        document.getElementById('edicaoInterpretes').innerHTML = intHtml
 
-        const compositorIds = compositores.map(c => c.artista_id)
-        let compositorHtml = ''
-        artistas.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(a => {
-            const selected = compositorIds.includes(a.artista_id) ? 'selected' : ''
-            compositorHtml += `<option value="${a.artista_id}" ${selected}>${a.nome}</option>`
-        })
-        document.getElementById('edicaoCompositores').innerHTML = compositorHtml
+        const compIds = compositores.map(c => c.artista_id)
+        let compHtml = ''
+        artistas.forEach(a => compHtml += `<option value="${a.artista_id}" ${compIds.includes(a.artista_id) ? 'selected' : ''}>${a.nome}</option>`)
+        document.getElementById('edicaoCompositores').innerHTML = compHtml
 
         musicaEditandoId = id
         document.getElementById('edicaoMusicaModal').style.display = 'flex'
-        
-    } catch (erro) {
-        console.error('Erro ao abrir edição:', erro)
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Erro',
-            mensagem: 'Erro ao abrir edição: ' + erro.message
-        })
     } finally {
         mostrarLoading(false)
     }
@@ -411,153 +303,76 @@ function fecharModalEdicao() {
 }
 
 async function deletarMusica(id, nomeMusica) {
-    console.log('>>> [RENDERER] Iniciando deleção da música ID:', id);
-
     const confirmado = await window.dialog.exibirDialogConfirmacao({
         titulo: 'Confirmar exclusão',
         mensagem: `Tem certeza que deseja deletar a música "${nomeMusica}"?`
-    });
-
-    if (!confirmado) {
-        console.log('>>> [RENDERER] Exclusão cancelada pelo usuário');
-        return;
-    }
+    })
+    if (!confirmado) return
     
-    mostrarLoading(true);
-    
+    mostrarLoading(true)
     try {
-        const resultado = await window.lojaMusica.musica.deletar(id);
-        
-        if (resultado && resultado.erro) {
-            throw new Error(resultado.erro);
-        }
-        
-        console.log('>>> [RENDERER] Deleção bem-sucedida, recarregando lista...');
-        
-        await carregarMusicas();
-        
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Sucesso',
-            mensagem: `Música "${nomeMusica}" deletada com sucesso!`
-        });
+        await window.lojaMusica.musica.deletar(id)
+        await carregarMusicas()
     } catch (erro) {
-        console.error('>>> [RENDERER] Erro ao deletar:', erro);
-        
-        let mensagem = erro.message;
-        if (erro.message.includes('discos associados')) {
-            mensagem = `Não é possível deletar: a música "${nomeMusica}" está associada a um ou mais discos.`;
-        } else if (erro.message.includes('interprete') || erro.message.includes('compositor')) {
-            mensagem = `Não é possível deletar: a música "${nomeMusica}" possui intérpretes ou compositores associados.`;
-        }
-        
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Erro',
-            mensagem: mensagem
-        });
+        window.dialog.exibirDialogMensagem({ titulo: 'Erro', mensagem: erro.message })
     } finally {
-        mostrarLoading(false);
+        mostrarLoading(false)
     }
 }
 
 function atualizarBotaoSelecionadas() {
-    const btn = document.getElementById('btnDeletarSelecionadas');
-    const countSpan = document.getElementById('selectedCount');
-    const count = musicasSelecionadas.length;
-    
+    const btn = document.getElementById('btnDeletarSelecionadas')
+    const countSpan = document.getElementById('selectedCount')
     if (btn) {
-        btn.disabled = count === 0;
-        countSpan.textContent = count;
+        btn.disabled = musicasSelecionadas.length === 0
+        countSpan.textContent = musicasSelecionadas.length
     }
 }
 
 function selecionarTodas() {
-    const selectAll = document.getElementById('selectAll');
-    const checkboxes = document.querySelectorAll('.musica-checkbox');
-    
+    const selectAll = document.getElementById('selectAll')
+    const checkboxes = document.querySelectorAll('.musica-checkbox')
     checkboxes.forEach(cb => {
-        cb.checked = selectAll.checked;
-        const musicaId = parseInt(cb.value);
-        
+        cb.checked = selectAll.checked
+        const id = parseInt(cb.value)
         if (selectAll.checked) {
-            if (!musicasSelecionadas.includes(musicaId)) {
-                musicasSelecionadas.push(musicaId);
-            }
+            if (!musicasSelecionadas.includes(id)) musicasSelecionadas.push(id)
         } else {
-            musicasSelecionadas = musicasSelecionadas.filter(id => id !== musicaId);
+            musicasSelecionadas = musicasSelecionadas.filter(mid => mid !== id)
         }
-    });
-    
-    atualizarBotaoSelecionadas();
+    })
+    atualizarBotaoSelecionadas()
 }
 
 function toggleSelecionarMusica(checkbox, musicaId) {
     if (checkbox.checked) {
-        if (!musicasSelecionadas.includes(musicaId)) {
-            musicasSelecionadas.push(musicaId);
-        }
+        if (!musicasSelecionadas.includes(musicaId)) musicasSelecionadas.push(musicaId)
     } else {
-        musicasSelecionadas = musicasSelecionadas.filter(id => id !== musicaId);
-        document.getElementById('selectAll').checked = false;
+        musicasSelecionadas = musicasSelecionadas.filter(id => id !== musicaId)
+        document.getElementById('selectAll').checked = false
     }
-    
-    atualizarBotaoSelecionadas();
+    atualizarBotaoSelecionadas()
 }
 
 async function deletarSelecionadas() {
-    if (musicasSelecionadas.length === 0) {
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Nenhuma seleção',
-            mensagem: 'Selecione pelo menos uma música para deletar.'
-        });
-        return;
-    }
-
     const confirmado = await window.dialog.exibirDialogConfirmacao({
         titulo: 'Confirmar exclusão em massa',
-        mensagem: `Tem certeza que deseja deletar ${musicasSelecionadas.length} música(s)?`
-    });
-
-    if (!confirmado) return;
-
-    mostrarLoading(true);
-    
+        mensagem: `Deletar ${musicasSelecionadas.length} música(s)?`
+    })
+    if (!confirmado) return
+    mostrarLoading(true)
     try {
-        const ids = musicasSelecionadas;
-        const resultado = await window.lojaMusica.musica.deletarMultiplas(ids);
-        
-        if (resultado && resultado.erro) {
-            throw new Error(resultado.erro);
-        }
-        
-        musicasSelecionadas = [];
-        document.getElementById('selectAll').checked = false;
-        
-        await carregarMusicas();
-        
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Sucesso',
-            mensagem: resultado.mensagem || `${ids.length} música(s) deletada(s) com sucesso!`
-        });
-        
-    } catch (erro) {
-        console.error('Erro ao deletar múltiplas músicas:', erro);
-        
-        let mensagem = erro.message;
-        if (erro.message.includes('discos associados')) {
-            mensagem = 'Algumas músicas estão associadas a discos e não podem ser deletadas.';
-        }
-        
-        window.dialog.exibirDialogMensagem({
-            titulo: 'Erro',
-            mensagem: mensagem
-        });
+        await window.lojaMusica.musica.deletarMultiplas(musicasSelecionadas)
+        musicasSelecionadas = []
+        document.getElementById('selectAll').checked = false
+        await carregarMusicas()
     } finally {
-        mostrarLoading(false);
-        atualizarBotaoSelecionadas();
+        mostrarLoading(false)
+        atualizarBotaoSelecionadas()
     }
 }
 
-// tornar funções globais
+
 window.editarMusica = editarMusica
 window.deletarMusica = deletarMusica
 window.fecharModalEdicao = fecharModalEdicao
