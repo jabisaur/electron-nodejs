@@ -100,12 +100,13 @@ const createIpcMain = () => {
   });
 
   // Estilo
-  ipcMain.handle('lojaMusica:estilo:listar', async () => {
-    try {
-      return await estiloService.listar();
-    } catch (erro) {
-      throw new Error(erro.message);
-    }
+  ipcMain.handle('lojaMusica:estilo:listar', async (event, pagina, limite) => {
+    try { return await estiloService.listar(pagina, limite); } 
+    catch (erro) { throw new Error(erro.message); }
+  });
+  ipcMain.handle('lojaMusica:estilo:contarTotal', async () => {
+    try { return await estiloService.contarTotal(); } 
+    catch (erro) { throw new Error(erro.message); }
   });
   ipcMain.handle("lojaMusica:estilo:criar", async (event, descricao) => {
     try {
@@ -151,12 +152,13 @@ const createIpcMain = () => {
       throw new Error(erro.message);
     }
   });
-  ipcMain.handle("lojaMusica:gravadora:listar", async () => {
-    try {
-      return await gravadoraService.listar();
-    } catch (erro) {
-      throw new Error(erro.message);
-    }
+  ipcMain.handle("lojaMusica:gravadora:listar", async (event, pagina, limite) => {
+    try { return await gravadoraService.listar(pagina, limite); } 
+    catch (erro) { throw new Error(erro.message); }
+  });
+  ipcMain.handle("lojaMusica:gravadora:contarTotal", async () => {
+    try { return await gravadoraService.contarTotal(); } 
+    catch (erro) { throw new Error(erro.message); }
   });
   ipcMain.handle("lojaMusica:gravadora:deletar", async (event, id) => {
     try {
@@ -195,12 +197,13 @@ const createIpcMain = () => {
       throw new Error(erro.message)
     }
   });
-  ipcMain.handle("lojaMusica:artista:listar", async () => {
-    try {
-      return await artistaService.listar()
-    } catch (erro) {
-      throw new Error(erro.message)
-    }
+  ipcMain.handle("lojaMusica:artista:listar", async (event, pagina, limite) => {
+    try { return await artistaService.listar(pagina, limite); } 
+    catch (erro) { throw new Error(erro.message); }
+  });
+  ipcMain.handle("lojaMusica:artista:contarTotal", async () => {
+    try { return await artistaService.contarTotal(); } 
+    catch (erro) { throw new Error(erro.message); }
   });
   ipcMain.handle("lojaMusica:artista:deletar", async (event, id) => {
     try {
@@ -291,12 +294,13 @@ const createIpcMain = () => {
       throw new Error(erro.message)
     }
   });
-  ipcMain.handle("lojaMusica:musica:listar", async () => {
-    try {
-      return await musicaService.listar()
-    } catch (erro) {
-      throw new Error(erro.message)
-    }
+  ipcMain.handle("lojaMusica:musica:listar", async (event, pagina, limite, filtros) => {
+    try { return await musicaService.listar(pagina, limite, filtros); } 
+    catch (erro) { throw new Error(erro.message); }
+  });
+  ipcMain.handle("lojaMusica:musica:contarTotal", async (event, filtros) => {
+    try { return await musicaService.contarTotal(filtros); } 
+    catch (erro) { throw new Error(erro.message); }
   });
   ipcMain.handle("lojaMusica:musica:deletar", async (event, id) => {
     try {
@@ -350,12 +354,17 @@ const createIpcMain = () => {
       throw new Error(erro.message)
     }
   });
-  ipcMain.handle("lojaMusica:disco:listar", async () => {
-    try {
-      return await discoService.listar()
-    } catch (erro) {
-      throw new Error(erro.message)
-    }
+  ipcMain.handle("lojaMusica:disco:listar", async (event, pagina, limite, filtros) => {
+    try { return await discoService.listar(pagina, limite, filtros); } 
+    catch (erro) { throw new Error(erro.message); }
+  });
+  ipcMain.handle("lojaMusica:disco:contarTotal", async (event, filtros) => {
+    try { return await discoService.contarTotal(filtros); } 
+    catch (erro) { throw new Error(erro.message); }
+  });
+  ipcMain.handle("lojaMusica:disco:listarAnos", async () => {
+    try { return await discoService.listarAnos(); } 
+    catch (erro) { throw new Error(erro.message); }
   });
   ipcMain.handle("lojaMusica:disco:deletar", async (event, id, force = false) => {
     console.log('>>> [MAIN] Recebida requisição para deletar disco:', { id, force });

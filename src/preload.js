@@ -49,11 +49,9 @@ contextBridge.exposeInMainWorld("dialog", {
 contextBridge.exposeInMainWorld("lojaMusica", {
     estilo: {
         criar: (descricao) => ipcRenderer.invoke("lojaMusica:estilo:criar", descricao),
-        listar: () => ipcRenderer.invoke("lojaMusica:estilo:listar"),
-        deletar: (id) => {
-            console.log('>>> [PRELOAD] Deletando estilo ID:', id);
-            return ipcRenderer.invoke("lojaMusica:estilo:deletar", id);
-        },
+        listar: (pagina, limite) => ipcRenderer.invoke("lojaMusica:estilo:listar", pagina, limite),
+        contarTotal: () => ipcRenderer.invoke("lojaMusica:estilo:contarTotal"),
+        deletar: (id) => ipcRenderer.invoke("lojaMusica:estilo:deletar", id),
         editar: (id, descricao) => ipcRenderer.invoke("lojaMusica:estilo:editar", id, descricao),
         buscar: (id) => ipcRenderer.invoke("lojaMusica:estilo:buscar", id),
         buscarPorDescricao: (descricao) => ipcRenderer.invoke("lojaMusica:estilo:buscarPorDescricao", descricao)
@@ -61,11 +59,9 @@ contextBridge.exposeInMainWorld("lojaMusica", {
 
     gravadora: {
         criar: (nome) => ipcRenderer.invoke("lojaMusica:gravadora:criar", nome),
-        listar: () => ipcRenderer.invoke("lojaMusica:gravadora:listar"),
-        deletar: (id) => {
-            console.log('>>> [PRELOAD] Deletando gravadora ID:', id);
-            return ipcRenderer.invoke("lojaMusica:gravadora:deletar", id);
-        },
+        listar: (pagina, limite) => ipcRenderer.invoke("lojaMusica:gravadora:listar", pagina, limite),
+        contarTotal: () => ipcRenderer.invoke("lojaMusica:gravadora:contarTotal"),
+        deletar: (id) => ipcRenderer.invoke("lojaMusica:gravadora:deletar", id),
         editar: (id, nome) => ipcRenderer.invoke("lojaMusica:gravadora:editar", id, nome),
         buscar: (id) => ipcRenderer.invoke("lojaMusica:gravadora:buscar", id),
         buscarPorNome: (nome) => ipcRenderer.invoke("lojaMusica:gravadora:buscarPorNome", nome)
@@ -73,11 +69,9 @@ contextBridge.exposeInMainWorld("lojaMusica", {
 
     artista: {
         criar: (nome) => ipcRenderer.invoke("lojaMusica:artista:criar", nome),
-        listar: () => ipcRenderer.invoke("lojaMusica:artista:listar"),
-        deletar: (id) => {
-            console.log('>>> [PRELOAD] Deletando artista ID:', id);
-            return ipcRenderer.invoke("lojaMusica:artista:deletar", id);
-        },
+        listar: (pagina, limite) => ipcRenderer.invoke("lojaMusica:artista:listar", pagina, limite),
+        contarTotal: () => ipcRenderer.invoke("lojaMusica:artista:contarTotal"),
+        deletar: (id) => ipcRenderer.invoke("lojaMusica:artista:deletar", id),
         editar: (id, nome) => ipcRenderer.invoke("lojaMusica:artista:editar", id, nome),
         buscar: (id) => ipcRenderer.invoke("lojaMusica:artista:buscar", id),
         buscarPorNome: (nome) => ipcRenderer.invoke("lojaMusica:artista:buscarPorNome", nome),
@@ -87,24 +81,18 @@ contextBridge.exposeInMainWorld("lojaMusica", {
     },
 
     papel: {
-        associar: (artistaId, musicaId, papel) =>
-            ipcRenderer.invoke("lojaMusica:papel:associar", artistaId, musicaId, papel),
-        desassociar: (artistaId, musicaId, papel) =>
-            ipcRenderer.invoke("lojaMusica:papel:desassociar", artistaId, musicaId, papel),
-        listarMusicas: (artistaId) =>
-            ipcRenderer.invoke("lojaMusica:papel:listarMusicas", artistaId),
-        listarArtistasDetalhados: () =>
-            ipcRenderer.invoke("lojaMusica:papel:listarArtistasDetalhados")
+        associar: (artistaId, musicaId, papel) => ipcRenderer.invoke("lojaMusica:papel:associar", artistaId, musicaId, papel),
+        desassociar: (artistaId, musicaId, papel) => ipcRenderer.invoke("lojaMusica:papel:desassociar", artistaId, musicaId, papel),
+        listarMusicas: (artistaId) => ipcRenderer.invoke("lojaMusica:papel:listarMusicas", artistaId),
+        listarArtistasDetalhados: () => ipcRenderer.invoke("lojaMusica:papel:listarArtistasDetalhados")
     },
 
     musica: {
         criar: (dados) => ipcRenderer.invoke("lojaMusica:musica:criar", dados),
-        listar: () => ipcRenderer.invoke("lojaMusica:musica:listar"),
+        listar: (pagina, limite, filtros) => ipcRenderer.invoke("lojaMusica:musica:listar", pagina, limite, filtros),
+        contarTotal: (filtros) => ipcRenderer.invoke("lojaMusica:musica:contarTotal", filtros),
         deletar: (id) => ipcRenderer.invoke("lojaMusica:musica:deletar", id),
-        deletarMultiplas: (ids) => {
-            console.log('>>> [PRELOAD] Deletando múltiplas músicas:', ids);
-            return ipcRenderer.invoke("lojaMusica:musica:deletarMultiplas", ids);
-        },
+        deletarMultiplas: (ids) => ipcRenderer.invoke("lojaMusica:musica:deletarMultiplas", ids),
         editar: (id, dados) => ipcRenderer.invoke("lojaMusica:musica:editar", id, dados),
         buscar: (id) => ipcRenderer.invoke("lojaMusica:musica:buscar", id),
         buscarInterpretes: (musicaId) => ipcRenderer.invoke("lojaMusica:musica:buscarInterpretes", musicaId),
@@ -113,12 +101,11 @@ contextBridge.exposeInMainWorld("lojaMusica", {
 
     disco: {
         criar: (dados) => ipcRenderer.invoke("lojaMusica:disco:criar", dados),
-        listar: () => ipcRenderer.invoke("lojaMusica:disco:listar"),
+        listar: (pagina, limite, filtros) => ipcRenderer.invoke("lojaMusica:disco:listar", pagina, limite, filtros),
+        contarTotal: (filtros) => ipcRenderer.invoke("lojaMusica:disco:contarTotal", filtros),
+        listarAnos: () => ipcRenderer.invoke("lojaMusica:disco:listarAnos"),
         editar: (id, dados) => ipcRenderer.invoke("lojaMusica:disco:editar", id, dados),
-        deletar: (id, force = false) => {
-            console.log('>>> [PRELOAD] Enviando requisição para deletar disco:', { id, force });
-            return ipcRenderer.invoke("lojaMusica:disco:deletar", id, force);
-        },
+        deletar: (id, force = false) => ipcRenderer.invoke("lojaMusica:disco:deletar", id, force),
         buscar: (id) => ipcRenderer.invoke("lojaMusica:disco:buscar", id),
         buscarPorNome: (nome) => ipcRenderer.invoke("lojaMusica:disco:buscarPorNome", nome),
         buscarPorNomeEInterpretes: (nome, interpreteIds) => ipcRenderer.invoke("lojaMusica:disco:buscarPorNomeEInterpretes", nome, interpreteIds),
