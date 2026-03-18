@@ -52,12 +52,13 @@ const criar = (descricao) => {
 
 const listar = (pagina = 1, itensPorPagina = 10) => {
     console.log(`>>> lojaMusica:estilo:listar > Página: ${pagina}`);
-    const offset = (pagina - 1) * itensPorPagina;
+    const limite = parseInt(itensPorPagina, 10);
+    const offset = (parseInt(pagina, 10) - 1) * limite;
 
     return new Promise((resolve, reject) => {
         db.all(
             'SELECT * FROM estilo ORDER BY descricao LIMIT ? OFFSET ?', 
-            [itensPorPagina, offset], 
+            [limite, offset], 
             (erro, estilos) => {  
                 if (erro) {
                     console.error('Erro ao listar estilos:', erro);

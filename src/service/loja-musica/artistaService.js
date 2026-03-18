@@ -51,11 +51,13 @@ const criar = (nome) => {
 };
 
 const listar = (pagina = 1, itensPorPagina = 10) => {
-    const offset = (pagina - 1) * itensPorPagina;
+    const limite = parseInt(itensPorPagina, 10);
+    const offset = (parseInt(pagina, 10) - 1) * limite;
+    
     return new Promise((resolve, reject) => {
         db.all(
             'SELECT * FROM artista ORDER BY nome LIMIT ? OFFSET ?',
-            [itensPorPagina, offset],
+            [limite, offset],
             (erro, artistas) => {
                 if (erro) {
                     console.error('Erro ao listar artistas: ', erro);

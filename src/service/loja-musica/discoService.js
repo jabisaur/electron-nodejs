@@ -37,7 +37,8 @@ const criar = (dados) => {
 };
 
 const listar = (pagina = 1, itensPorPagina = 10, filtros = {}) => {
-    const offset = (pagina - 1) * itensPorPagina;
+    const limite = parseInt(itensPorPagina, 10);
+    const offset = (parseInt(pagina, 10) - 1) * limite;
     const params = [];
     
     let sql = `
@@ -61,7 +62,7 @@ const listar = (pagina = 1, itensPorPagina = 10, filtros = {}) => {
     }
 
     sql += ` ORDER BY d.nome LIMIT ? OFFSET ?`;
-    params.push(itensPorPagina, offset);
+    params.push(limite, offset);
 
     return new Promise((resolve, reject) => {
         db.all(sql, params, (erro, discos) => {

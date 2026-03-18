@@ -115,7 +115,8 @@ const criar = (dados) => {
 
 const listar = (pagina = 1, itensPorPagina = 10, filtros = {}) => {
     return new Promise((resolve, reject) => {
-        const offset = (pagina - 1) * itensPorPagina;
+        const limite = parseInt(itensPorPagina, 10);
+        const offset = (parseInt(pagina, 10) - 1) * limite;
         const params = [];
 
         let sql = `
@@ -149,7 +150,7 @@ const listar = (pagina = 1, itensPorPagina = 10, filtros = {}) => {
         }
 
         sql += ` ORDER BY m.nome LIMIT ? OFFSET ?`;
-        params.push(itensPorPagina, offset);
+        params.push(limite, offset);
 
         db.all(sql, params, (erro, musicas) => {
             if (erro) {
@@ -175,10 +176,14 @@ const contarTotal = (filtros = {}) => {
             sql += ` AND estilo_id = ?`;
             params.push(filtros.estilo_id);
         }
+        if (filtros.ano) {
+            sql += ` AND strftime('%Y', data_lancamento) = ?`;
+            params.push(filtros.ano.toString());
+        }
 
         db.get(sql, params, (erro, row) => {
             if (erro) reject(erro);
-            else resolve(row.total);
+            else resolve(row ? row.total : 0);
         });
     });
 };
