@@ -1,4 +1,4 @@
-const formGravadora = document.getElementById('form-artista');
+const formGravadora = document.getElementById('form-gravadora');
 const tbodyGravadora = document.getElementById('tbody-gravadora');
 const loadingOverlay = document.getElementById('loadingOverlay');
 
