@@ -62,20 +62,22 @@ function atualizarTabela(artistas) {
     }
 
     tbodyArtistas.innerHTML = artistas.map(artista => {
-        const nomeEscapada = artista.nome.replace(/'/g, "\\'");
-        return `
-            <tr>
-                <td>${artista.artista_id}</td>
-                <td>${artista.nome}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm me-1" onclick="editarArtista(${artista.artista_id}, '${nomeEscapada}')">
-                        <i class="bi bi-pencil"></i> Editar
+    const nomeEscapada = artista.nome.replace(/'/g, "\\'");
+    return `
+        <tr>
+            <td>${artista.artista_id}</td>
+            <td>${artista.nome}</td>
+            <td>
+                <div class="d-flex gap-1">
+                    <button class="btn btn-warning btn-sm" onclick="editarArtista(${artista.artista_id}, '${nomeEscapada}')" title="Editar">
+                        <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-danger btn-sm" onclick="deletarArtista(${artista.artista_id})">
-                        <i class="bi bi-trash"></i> Deletar
+                    <button class="btn btn-danger btn-sm" onclick="deletarArtista(${artista.artista_id})" title="Excluir">
+                        <i class="bi bi-trash"></i>
                     </button>
-                </td>
-            </tr>`;
+                </div>
+            </td>
+        </tr>`;
     }).join('');
 }
 

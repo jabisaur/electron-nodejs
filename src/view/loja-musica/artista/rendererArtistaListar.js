@@ -139,16 +139,16 @@ function preencherTabela(artistas) {
                     </span>
                 </td>
                 <td>
-                    <div class="btn-group btn-group-sm" role="group">
+                    <div class="d-flex gap-1">
                         <button class="btn btn-info btn-sm" 
                                 onclick="verDetalhesArtista(${artista.artista_id})"
                                 title="Ver detalhes">
-                            <i class="bi bi-info-circle"></i>
+                                <i class="bi bi-info-circle"></i>
                         </button>
                         <button class="btn btn-danger btn-sm" 
                                 onclick="deletarArtista(${artista.artista_id})"
                                 title="Excluir">
-                            <i class="bi bi-trash"></i> Excluir
+                            <i class="bi bi-trash"></i>
                         </button>
                     </div>
                 </td>

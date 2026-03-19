@@ -73,11 +73,11 @@ function atualizarTabela(gravadoras) {
                 <td>${gravadora.gravadora_id}</td>
                 <td>${gravadora.nome}</td>
                 <td>
-                    <button class="btn btn-primary btn-sm me-1" onclick="editarGravadora(${gravadora.gravadora_id}, '${nomeEscapada}')">
-                        <i class="bi bi-pencil"></i> Editar
+                    <button class="btn btn-warning btn-sm me-1" onclick="editarGravadora(${gravadora.gravadora_id}, '${nomeEscapada}')">
+                        <i class="bi bi-pencil"></i>
                     </button>
                     <button class="btn btn-danger btn-sm" onclick="deletarGravadora(${gravadora.gravadora_id})">
-                        <i class="bi bi-trash"></i> Deletar
+                        <i class="bi bi-trash"></i>
                     </button>
                 </td>
             </tr>`;

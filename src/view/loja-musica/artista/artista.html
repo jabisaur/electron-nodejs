@@ -56,26 +56,17 @@
             </nav>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="page-title"><i class="bi bi-person"></i> Gerenciar Artistas</h1>
-            <a href="../cadastro/cadastro.html" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Voltar</a>
-        </div>
-
         <div class="card mb-4">
-            <div class="card-header bg-warning">
-                <h2 class="h5 mb-0"><i class="bi bi-plus-circle"></i> Cadastrar Novo Artista</h2>
+            <div class="card-header bg-warning text-white">
+                <h2 class="h5 mb-0"><i class="bi bi-plus-circle"></i> Cadastrar Artista</h2>
             </div>
             <div class="card-body">
                 <form id="form-artista">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <label for="nome" class="form-label">Nome do Artista</label>
-                            <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome do artista..." required>
-                        </div>
-                        <div class="col-md-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-save"></i> Salvar</button>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nome do Artista</label>
+                        <input type="text" class="form-control" name="nome" placeholder="Ex: Michael Jackson, Beyoncé, etc." required>
                     </div>
+                    <button type="submit" class="btn btn-warning"><i class="bi bi-save"></i> Salvar</button>
                 </form>
             </div>
         </div>
@@ -96,23 +87,23 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Nome</th>
-                                <th style="width: 180px;">Ações</th>
+                                <th style="width: 100px;">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="tbody-artistas">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
 
                 <div class="paginacao">
-                    <div class="resumo-resultados" id="resumoResultados">Mostrando 0-0 de 0 artistas</div>
+                    <div class="resumo-resultados" id="resumoResultados"></div>
                     <div class="d-flex gap-2">
-                        <button class="btn-pagina" id="btnAnterior" onclick="paginaAnterior()" disabled>
-                            <i class="bi bi-chevron-left"></i> Anterior
+                        <button class="btn-pagina" id="btnAnterior" onclick="paginaAnterior()">
+                            <i class="bi bi-chevron-left"></i>
                         </button>
                         <span class="paginacao-info" id="paginacaoInfo">Página 1</span>
-                        <button class="btn-pagina" id="btnProxima" onclick="proximaPagina()" disabled>
-                            Próxima <i class="bi bi-chevron-right"></i>
+                        <button class="btn-pagina" id="btnProxima" onclick="proximaPagina()">
+                            <i class="bi bi-chevron-right"></i>
                         </button>
                     </div>
                 </div>
@@ -123,22 +114,21 @@
     <div id="edicaoArtistaModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="bi bi-pencil-square"></i> Editar Artista</h3>
+                <h3>Editar Artista</h3>
                 <button class="close-btn" onclick="fecharModalEdicao()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="valor-atual-info">
-                    <strong>Nome atual:</strong>
-                    <span id="valorAtualTexto"></span>
+                    <strong>Nome Atual:</strong> <span id="valorAtualTexto"></span>
                 </div>
                 <div class="form-group">
-                    <label for="edicaoInput">Novo Nome:</label>
+                    <label>Novo Nome:</label>
                     <input type="text" id="edicaoInput" class="edicao-input">
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancelar" onclick="fecharModalEdicao()">Cancelar</button>
-                <button class="btn-confirmar" id="edicaoBtnConfirmar">Salvar Alterações</button>
+                <button class="btn btn-secondary" onclick="fecharModalEdicao()">Cancelar</button>
+                <button class="btn btn-warning" id="edicaoBtnConfirmar">Salvar Alterações</button>
             </div>
         </div>
     </div>

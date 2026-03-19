@@ -63,20 +63,22 @@ function atualizarTabela(estilos) {
     }
 
     tbodyEstilos.innerHTML = estilos.map(estilo => {
-        const descricaoEscapada = estilo.descricao.replace(/'/g, "\\'");
-        return `
-            <tr>
-                <td>${estilo.estilo_id}</td>
-                <td>${estilo.descricao}</td>
-                <td>
-                    <button class="btn btn-primary btn-sm me-1" onclick="editarEstilo(${estilo.estilo_id}, '${descricaoEscapada}')">
-                        <i class="bi bi-pencil"></i> Editar
+    const descricaoEscapada = estilo.descricao.replace(/'/g, "\\'");
+    return `
+        <tr>
+            <td>${estilo.estilo_id}</td>
+            <td>${estilo.descricao}</td>
+            <td>
+                <div class="d-flex gap-1">
+                    <button class="btn btn-warning btn-sm" onclick="editarEstilo(${estilo.estilo_id}, '${descricaoEscapada}')" title="Editar">
+                        <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-danger btn-sm" onclick="deletarEstilo(${estilo.estilo_id})">
-                        <i class="bi bi-trash"></i> Deletar
+                    <button class="btn btn-danger btn-sm" onclick="deletarEstilo(${estilo.estilo_id})" title="Excluir">
+                        <i class="bi bi-trash"></i>
                     </button>
-                </td>
-            </tr>`;
+                </div>
+            </td>
+        </tr>`;
     }).join('');
 }
 

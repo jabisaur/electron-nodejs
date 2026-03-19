@@ -171,8 +171,14 @@ function atualizarTabela() {
                 <td><small title="${interpretesTexto}">${interpretesTexto.substring(0, 30)}${interpretesTexto.length > 30 ? '...' : ''}</small></td>
                 <td><small title="${compositoresTexto}">${compositoresTexto.substring(0, 30)}${compositoresTexto.length > 30 ? '...' : ''}</small></td>
                 <td>
-                    <button class="btn btn-primary btn-sm" onclick="editarMusica(${musica.musica_id})"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-danger btn-sm" onclick="deletarMusica(${musica.musica_id}, '${nomeEscapado}')"><i class="bi bi-trash"></i></button>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-warning btn-sm" onclick="editarMusica(${musica.musica_id})" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deletarMusica(${musica.musica_id}, '${nomeEscapado}')" title="Excluir">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>`
     })

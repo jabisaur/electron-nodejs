@@ -218,7 +218,7 @@ function montarLinhaTabela(disco, dataFormatada, interpretesInfo, dadosJSON) {
             <td>${dataFormatada}</td>
             <td>${disco.gravadora_nome || '-'}</td>
             <td>
-                <div class="btn-group btn-group-sm" role="group">
+                <div class="d-flex gap-1">
                     <button class="btn btn-info btn-sm" 
                             onclick="verDetalhesDisco(${disco.disco_id})" 
                             title="Ver detalhes">

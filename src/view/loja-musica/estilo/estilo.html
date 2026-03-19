@@ -63,20 +63,16 @@
         </div>
 
         <div class="card mb-4">
-            <div class="card-header bg-primary">
+            <div class="card-header bg-primary text-white">
                 <h2 class="h5 mb-0"><i class="bi bi-plus-circle"></i> Cadastrar Novo Estilo</h2>
             </div>
             <div class="card-body">
                 <form id="form-estilo">
-                    <div class="row">
-                        <div class="col-md-9 mb-3">
-                            <label for="descricao" class="form-label">Nome do Estilo</label>
-                            <input type="text" class="form-control" id="descricao" name="descricao" placeholder="Ex: Rock, Pop, Jazz..." autofocus required>
-                        </div>
-                        <div class="col-md-3 mb-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-save"></i> Salvar</button>
-                        </div>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Nome do Estilo</label>
+                        <input type="text" class="form-control" id="descricao" name="descricao" placeholder="Ex: Rock, Pop, Jazz..." autofocus required>
                     </div>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Salvar</button>
                 </form>
             </div>
         </div>
@@ -97,11 +93,11 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Descrição</th>
-                                <th style="width: 180px;">Ações</th>
+                                <th style="width: 100px;">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="tbody-estilos">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
 
@@ -109,11 +105,11 @@
                     <div class="resumo-resultados text-muted" id="resumoResultados">Mostrando 0-0 de 0 estilos</div>
                     <div class="d-flex gap-2">
                         <button class="btn-pagina" id="btnAnterior" onclick="paginaAnterior()" disabled>
-                            <i class="bi bi-chevron-left"></i> Anterior
+                            <i class="bi bi-chevron-left"></i>
                         </button>
                         <span class="paginacao-info" id="paginacaoInfo">Página 1</span>
                         <button class="btn-pagina" id="btnProxima" onclick="proximaPagina()" disabled>
-                            Próxima <i class="bi bi-chevron-right"></i>
+                            <i class="bi bi-chevron-right"></i>
                         </button>
                     </div>
                 </div>
@@ -124,22 +120,21 @@
     <div id="edicaoEstiloModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="edicaoTitulo">Editar Estilo</h3>
+                <h3>Editar Estilo</h3>
                 <button class="close-btn" onclick="fecharModalEdicao()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="valor-atual-info mb-3">
-                    <strong>Nome atual:</strong>
-                    <span id="valorAtualTexto" class="text-primary"></span>
+                <div class="valor-atual-info">
+                    <strong>Nome Atual:</strong> <span id="valorAtualTexto" class="text-primary"></span>
                 </div>
                 <div class="form-group">
-                    <label for="edicaoInput" class="form-label">Novo nome:</label>
+                    <label for="edicaoInput" class="form-label">Novo Nome:</label>
                     <input type="text" id="edicaoInput" class="form-control" placeholder="Digite o novo nome do estilo..." />
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="edicaoBtnCancelar" class="btn btn-secondary" onclick="fecharModalEdicao()">Cancelar</button>
-                <button id="edicaoBtnConfirmar" class="btn btn-primary">Salvar Alterações</button>
+                <button class="btn btn-secondary" onclick="fecharModalEdicao()">Cancelar</button>
+                <button class="btn btn-primary" id="edicaoBtnConfirmar">Salvar Alterações</button>
             </div>
         </div>
     </div>
